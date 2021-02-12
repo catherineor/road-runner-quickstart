@@ -2,7 +2,7 @@
 // negative = turning clockwise
 // positive = turning counter clockwise
 
-package org.firstinspires.ftc.teamcode.java;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.State;

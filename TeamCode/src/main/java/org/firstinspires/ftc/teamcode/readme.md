@@ -65,7 +65,7 @@ Driver Station's OpMode list.
 Each OpMode sample class begins with several lines of code like the ones shown below:
 
 ```
- @TeleOp(name="Template: Linear OpMode", group="Linear Opmode")
+ @org.firstinspires.ftc.teamcode.TeleOp(name="Template: Linear OpMode", group="Linear Opmode")
  @Disabled
 ```
 
