@@ -165,6 +165,9 @@ public class ScrimmageAuto extends LinearOpMode {
                     encoderForwards(20, .5);
                     setStateRunning(State.STOP);
                     break;
+                case STOP:
+                    stopMotors();
+            }
     /*case SCAN:
     //add tensorflow/vuforia stuff
     break;
@@ -191,9 +194,6 @@ public class ScrimmageAuto extends LinearOpMode {
       encoderBackwards(40, .5);
       setStateRunning(State.STOP);
     break;*/
-                case STOP:
-                    stopMotors();
-            }
         }
     }
 
@@ -233,31 +233,30 @@ public class ScrimmageAuto extends LinearOpMode {
         telemetry.addDate("STRAIGHT_COUNTS",STRAIGHT_COUNTS)
     }
 
-    public void encoderCrab(int inches, double power){
+    public void encoderCrab(int inches, double power) {
         final double WHEEL_DIAMETER = 7.5; //in cm
         final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
-        final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches);
+        final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM * 2.54 * inches);
 
-        if(Math.abs(driveBackRight.getCurrentPosition()) < Math.abs(STRAIGHT_COUNTS)){
+        if (Math.abs(driveBackRight.getCurrentPosition()) < Math.abs(STRAIGHT_COUNTS)) {
             crab(power);
-    else
+        else
             stopMotors();
 
-            telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
+            telemetry.addData("STRAIGHT_COUNTS", STRAIGHT_COUNTS);
         }
 
-        public void encoderBackwards(int inches, double power){
+        public void encoderBackwards ( int inches, double power){
             final double WHEEL_DIAMETER = 7.5; //in cm
             final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
-            final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches*-1);
+            final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM * 2.54 * inches * -1);
             driveFrontLeft.setMode(DcMotor.RunMode.RESET_ENCODERS);
             driveFrontLeft.setTargetPosition(STRAIGHT_COUNTS);
             driveFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             drive(-power);
 
-            while(driveFrontLeft.isBusy())
-            {
+            while (driveFrontLeft.isBusy()) {
                 telemetry.addData("POS", driveFrontLeft.getCurrentPosition());
                 telemetry.addData("STRAIGHT_COUNTS", STRAIGHT_COUNTS);
                 telemetry.update();
@@ -269,7 +268,7 @@ public class ScrimmageAuto extends LinearOpMode {
             telemetry.update();
         }
 
-        public void drive(double power)
+        public void drive ( double power)
         {
             driveFrontRight.setPower(power);
             driveFrontLeft.setPower(power);
@@ -277,7 +276,7 @@ public class ScrimmageAuto extends LinearOpMode {
             driveBackLeft.setPower(power);
         }
 
-        public void crab(double power)
+        public void crab (double power)
         {
             driveFrontRight.setPower(power);
             driveFrontLeft.setPower(-power);
@@ -285,7 +284,7 @@ public class ScrimmageAuto extends LinearOpMode {
             driveBackLeft.setPower(power);
         }
 
-        public void turn(double power)
+        public void turn (double power)
         {
             driveFrontRight.setPower(power);
             driveFrontLeft.setPower(-power);
@@ -293,10 +292,11 @@ public class ScrimmageAuto extends LinearOpMode {
             driveBackLeft.setPower(-power);
         }
 
-        public void stopMotors()
+        public void stopMotors ()
         {
             driveFrontRight.setPower(0);
             driveFrontLeft.setPower(0);
             driveBackRight.setPower(0);
             driveBackLeft.setPower(0);
         }
+    }
