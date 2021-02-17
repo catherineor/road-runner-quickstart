@@ -2,6 +2,8 @@
 // negative = turning clockwise
 // positive = turning counter clockwise
 
+//todo: 75 mm, 2 in, tele-op(shooter, wobble)
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -76,6 +78,8 @@ public class ScrimmageAuto extends LinearOpMode {
     //shooter
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
+    boolean changeFlicker = true;
+    private float flickerPos = .5f;
 
     //indexing
     private DcMotor index;
@@ -97,12 +101,9 @@ public class ScrimmageAuto extends LinearOpMode {
     private int ringHeight;
 
     private enum State {
-        TOSCAN,
-        /*SCAN,
+        TOPS,
         SHOOTPS,
-        TOTZ,
-        DROPOFF,
-        PARK,*/
+        PARK,
         STOP,
     }
 
@@ -125,7 +126,7 @@ public class ScrimmageAuto extends LinearOpMode {
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
-        //set shooter flicker position to not blocking
+        shooterFlicker.setPosition(flickerPos);
 
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -153,47 +154,34 @@ public class ScrimmageAuto extends LinearOpMode {
         waitForStart();
         resetEncoders();
         useEncoders();
-        state = State.TOSCAN;
+        state = State.TOPS;
         runtime.reset();
         while (opModeIsActive())
         {
             //correction = checkDirection();
             switch(state) {
-                case TOSCAN:
+                case TOPS:
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(20, .5);
+                    encoderBackwards(75, .5);
+                    setStateRunning(State.SHOOTPS);
+                    break;
+                case SHOOTPS:
+                    shooterFlicker.setPosition(1);//adjust shooter flicker position throughout?
+                    ElapsedTime time = new ElapsedTime();
+                    while (time.seconds()<6)
+                        shooterWheel.setPower(0.5);
+                    setStateRunning(State.PARK);
+                    break;
+                case PARK:
+                    resetEncoders();
+                    useEncoders();
+                    encoderBackwards(5, .5);
                     setStateRunning(State.STOP);
                     break;
                 case STOP:
                     stopMotors();
             }
-    /*case SCAN:
-    //add tensorflow/vuforia stuff
-    break;
-    case SHOOTPS:
-      shooterWheel.setPower(0.5);
-      shooterFlicker.setPosition(0.5);
-      //set shooter wheel running while all 3 rings are shot
-      setStateRunning(State.TOTZ);
-    break;
-    case TOTZ:
-      resetEncoders();
-      useEncoders();
-      encoderForwards(20, .5);
-      resetEncoders();
-      useEncoders();
-      encoderCrab(20, 5);//check direction
-      setStateRunning(State.PARK);
-    break;
-    case DROPOFF:
-    break;
-    case PARK:
-      resetEncoders();
-      useEncoders();
-      encoderBackwards(40, .5);
-      setStateRunning(State.STOP);
-    break;*/
         }
     }
 
@@ -218,85 +206,84 @@ public class ScrimmageAuto extends LinearOpMode {
         driveBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void encoderForwards(int inches, double power)
-    {
+    public void encoderForwards(int inches, double power){
+        final double WHEEL_DIAMETER = (7.5/2.54);
+        final double COUNTS_PER_INCH = 537.6 / (Math.PI * WHEEL_DIAMETER);
+        final int STRAIGHT_COUNTS = (int) (COUNTS_PER_INCH*inches);
+
+        while (Math.abs(driveBackRight.getCurrentPosition()) < Math.abs(STRAIGHT_COUNTS)){
+            drive(power);
+            telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
+            telemetry.addData("POSITION", driveBackRight.getCurrentPosition());
+            telemetry.update();
+        }
+
+        stopMotors();
+
+        return;
+    }
+
+    public void encoderCrab(int inches, double power){
         final double WHEEL_DIAMETER = 7.5; //in cm
         final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
         final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches);
 
-        if (driveBackRight.getCurrentPosition()) < STRAIGHT_COUNTS)
-        {
-            drive(power);
-        }
-    else
-        stopMotors();
-        telemetry.addDate("STRAIGHT_COUNTS",STRAIGHT_COUNTS)
-    }
-
-    public void encoderCrab(int inches, double power) {
-        final double WHEEL_DIAMETER = 7.5; //in cm
-        final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
-        final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM * 2.54 * inches);
-
-        if (Math.abs(driveBackRight.getCurrentPosition()) < Math.abs(STRAIGHT_COUNTS)) {
+        while(Math.abs(driveBackRight.getCurrentPosition()) < Math.abs(STRAIGHT_COUNTS)){
             crab(power);
-        else
-            stopMotors();
-
-            telemetry.addData("STRAIGHT_COUNTS", STRAIGHT_COUNTS);
-        }
-
-        public void encoderBackwards ( int inches, double power){
-            final double WHEEL_DIAMETER = 7.5; //in cm
-            final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
-            final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM * 2.54 * inches * -1);
-            driveFrontLeft.setMode(DcMotor.RunMode.RESET_ENCODERS);
-            driveFrontLeft.setTargetPosition(STRAIGHT_COUNTS);
-            driveFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            drive(-power);
-
-            while (driveFrontLeft.isBusy()) {
-                telemetry.addData("POS", driveFrontLeft.getCurrentPosition());
-                telemetry.addData("STRAIGHT_COUNTS", STRAIGHT_COUNTS);
-                telemetry.update();
-            }
-            stopMotors();
-
-            telemetry.addData("POS", driveFrontLeft.getCurrentPosition());
-            telemetry.addData("STRAIGHT_COUNTS", STRAIGHT_COUNTS);
+            telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
+            telemetry.addData("POSITION", driveBackRight.getCurrentPosition());
             telemetry.update();
         }
-
-        public void drive ( double power)
-        {
-            driveFrontRight.setPower(power);
-            driveFrontLeft.setPower(power);
-            driveBackRight.setPower(power);
-            driveBackLeft.setPower(power);
-        }
-
-        public void crab (double power)
-        {
-            driveFrontRight.setPower(power);
-            driveFrontLeft.setPower(-power);
-            driveBackRight.setPower(-power);
-            driveBackLeft.setPower(power);
-        }
-
-        public void turn (double power)
-        {
-            driveFrontRight.setPower(power);
-            driveFrontLeft.setPower(-power);
-            driveBackRight.setPower(power);
-            driveBackLeft.setPower(-power);
-        }
-
-        public void stopMotors ()
-        {
-            driveFrontRight.setPower(0);
-            driveFrontLeft.setPower(0);
-            driveBackRight.setPower(0);
-            driveBackLeft.setPower(0);
-        }
+        stopMotors();
+        return;
     }
+
+    public void encoderBackwards(int inches, double power){
+        final double WHEEL_DIAMETER = 7.5; //in cm
+        final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
+        final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches*-1);
+
+        while(driveBackRight.getCurrentPosition() > STRAIGHT_COUNTS)
+        {
+            drive(-power);
+            telemetry.addData("STRAIGHT_COUNTS", STRAIGHT_COUNTS);
+            telemetry.addData("POSITION", driveBackRight.getCurrentPosition());
+            telemetry.update();
+        }
+        stopMotors();
+
+        return;
+    }
+
+    public void drive(double power)
+    {
+        driveFrontRight.setPower(power);
+        driveFrontLeft.setPower(power);
+        driveBackRight.setPower(power);
+        driveBackLeft.setPower(power);
+    }
+
+    public void crab(double power)
+    {
+        driveFrontRight.setPower(power);
+        driveFrontLeft.setPower(-power);
+        driveBackRight.setPower(-power);
+        driveBackLeft.setPower(power);
+    }
+
+    public void turn(double power)
+    {
+        driveFrontRight.setPower(power);
+        driveFrontLeft.setPower(-power);
+        driveBackRight.setPower(power);
+        driveBackLeft.setPower(-power);
+    }
+
+    public void stopMotors()
+    {
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
+    }
+}
