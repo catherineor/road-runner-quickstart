@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp(name="TeleOp", group="Iterative Opmode")
 
-public class TeleOpMeets extends OpMode
+public class TeleOpScrimmage extends OpMode
 {
     //shooter
     private DcMotor shooterWheel;
