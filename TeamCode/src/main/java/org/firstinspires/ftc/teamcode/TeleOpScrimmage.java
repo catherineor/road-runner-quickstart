@@ -25,7 +25,7 @@ public class TeleOpScrimmage extends OpMode
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
     boolean changeFlicker = true;
-    private float flickerPos = 0.5f;
+    private float flickerPos = 0;
 
     //indexing
     private DcMotor index;
@@ -125,13 +125,13 @@ public class TeleOpScrimmage extends OpMode
 
         if(gamepad2.a && changeFlicker)
         {
-            flickerPos = 1;
+            flickerPos = .25f;
             shooterFlicker.setPosition(flickerPos);
             changeFlicker = !changeFlicker;
         }
         else if(gamepad2.a && !changeFlicker)
         {
-            flickerPos = .5f;
+            flickerPos = 0;
             shooterFlicker.setPosition(flickerPos);
             changeFlicker = !changeFlicker;
         }
