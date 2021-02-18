@@ -79,7 +79,7 @@ public class ScrimmageAuto extends LinearOpMode {
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
     boolean changeFlicker = true;
-    private float flickerPos = .5f;
+    private float flickerPos = 0;
 
     //indexing
     private DcMotor index;
@@ -156,22 +156,31 @@ public class ScrimmageAuto extends LinearOpMode {
         useEncoders();
         state = State.TOPS;
         runtime.reset();
+        ElapsedTime autoTime = new ElapsedTime();
         while (opModeIsActive())
         {
             //correction = checkDirection();
             switch(state) {
                 case TOPS:
+                    shooterWheel.setPower(.5);
                     resetEncoders();
                     useEncoders();
-                    encoderBackwards(75, .5);
-                    setStateRunning(State.SHOOTPS);
+                    encoderCrab(5, .5);
+                    resetEncoders();
+                    useEncoders();
+                    encoderForwards(61, .5);
+                    setStateRunning(State.STOP);
                     break;
                 case SHOOTPS:
-                    shooterFlicker.setPosition(1);//adjust shooter flicker position throughout?
+                    shooterWheel.setPower(.5);
                     ElapsedTime time = new ElapsedTime();
-                    while (time.seconds()<6)
-                        shooterWheel.setPower(0.5);
-                    setStateRunning(State.PARK);
+                    flicker(time);
+                    shooterFlicker.setPosition(.25);
+                    
+                    //ElapsedTime time = new ElapsedTime();
+                    //while (time.seconds()<6)
+                        //shooterWheel.setPower(0.5);
+                    setStateRunning(State.STOP);
                     break;
                 case PARK:
                     resetEncoders();
@@ -285,5 +294,16 @@ public class ScrimmageAuto extends LinearOpMode {
         driveFrontLeft.setPower(0);
         driveBackRight.setPower(0);
         driveBackLeft.setPower(0);
+    }
+    public void flicker(ElapsedTime time)
+    {
+        if(time.seconds()%3==0){
+            shooterFlicker.setPosition(.5);
+        }
+        else
+        {
+            flickerPos = 0;
+            shooterFlicker.setPosition(flickerPos);
+        }
     }
 }
