@@ -1,8 +1,7 @@
 // Marlbots-2020-2021-Auto-Code
 // negative = turning clockwise
 // positive = turning counter clockwise
-
-//todo: 75 mm, 2 in, tele-op(shooter, wobble)
+// positive = crab right
 
 package org.firstinspires.ftc.teamcode;
 
@@ -63,9 +62,9 @@ import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
-@Autonomous(name="Scrimmage Auto", group="Linear Opmode")
+@Autonomous(name="Shoot Auto", group="Linear Opmode")
 
-public class ScrimmageAuto extends LinearOpMode {
+public class ShootAuto extends LinearOpMode {
     public State state;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -101,8 +100,8 @@ public class ScrimmageAuto extends LinearOpMode {
     private int ringHeight;
 
     private enum State {
-        TOPS,
-        SHOOTPS,
+        TOLL,
+        SHOOT,
         PARK,
         STOP,
     }
@@ -154,32 +153,30 @@ public class ScrimmageAuto extends LinearOpMode {
         waitForStart();
         resetEncoders();
         useEncoders();
-        state = State.TOPS;
+        state = State.TOLL;
         runtime.reset();
         ElapsedTime autoTime = new ElapsedTime();
         while (opModeIsActive())
         {
             //correction = checkDirection();
             switch(state) {
-                case TOPS:
+                case TOLL:
                     shooterWheel.setPower(.5);
                     resetEncoders();
                     useEncoders();
                     encoderCrab(5, .5);
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(61, .5);
-                    setStateRunning(State.STOP);
+                    encoderForwards(58, .5);
+                    setStateRunning(State.SHOOT);
                     break;
-                case SHOOTPS:
+                case SHOOT:
                     shooterWheel.setPower(.5);
                     ElapsedTime time = new ElapsedTime();
-                    flicker(time);
-                    shooterFlicker.setPosition(.25);
-                    
-                    //ElapsedTime time = new ElapsedTime();
-                    //while (time.seconds()<6)
-                        //shooterWheel.setPower(0.5);
+                    if(time.seconds()>0 && time.seconds()<5)
+                        shooterFlicker.setPosition(.25);
+                    if(time.seconds()>6)
+                        shooterFlicker.setPosition(0);
                     setStateRunning(State.STOP);
                     break;
                 case PARK:

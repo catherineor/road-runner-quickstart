@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 
-@TeleOp(name="TeleOp", group="Iterative Opmode")
+@TeleOp(name="TeleOpScrimmage", group="Iterative Opmode")
 
 public class TeleOpScrimmage extends OpMode
 {
