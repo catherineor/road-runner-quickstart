@@ -64,7 +64,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 @Autonomous(name="Park Auto", group="Linear Opmode")
 
-public class ParkAuto extends LinearOpMode {
+public class PushWobbleAuto extends LinearOpMode {
     public State state;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -100,6 +100,7 @@ public class ParkAuto extends LinearOpMode {
     private int ringHeight;
 
     private enum State {
+        PUSHWOBBLE,
         PARK,
         STOP,
     }
@@ -151,20 +152,23 @@ public class ParkAuto extends LinearOpMode {
         waitForStart();
         resetEncoders();
         useEncoders();
-        state = State.PARK;
+        state = State.PUSHWOBBLE;
         runtime.reset();
         ElapsedTime autoTime = new ElapsedTime();
         while (opModeIsActive())
         {
             //correction = checkDirection();
             switch(state) {
+                case PUSHWOBBLE:
+                    resetEncoders();
+                    useEncoders();
+                    encoderForwards(70, .5);
+                    setStateRunning(State.PARK);
+                    break;
                 case PARK:
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(5, .5);
-                    resetEncoders();
-                    useEncoders();
-                    encoderForwards(63, .5);
+                    encoderBackwards(5, .5);
                     setStateRunning(State.STOP);
                     break;
                 case STOP:
