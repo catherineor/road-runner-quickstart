@@ -157,10 +157,10 @@ public class TeleOpFlicker extends OpMode
             }
         }
         else if (pressed == true && done == false) {
-            if (timer.seconds() > 0 && timer.seconds() < 0.4) {
+            if (timer.seconds() > 0 && timer.seconds() < 2) {
                 shooterFlicker.setPosition(0.25f);
             }
-            if (timer.seconds() > 3) {
+            if (timer.seconds() > 2) {
                 shooterFlicker.setPosition(0);
                 done = true;
             }
