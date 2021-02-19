@@ -173,10 +173,12 @@ public class ShootAuto extends LinearOpMode {
                 case SHOOT:
                     shooterWheel.setPower(.5);
                     ElapsedTime time = new ElapsedTime();
-                    if(time.seconds()>0 && time.seconds()<5)
+                    if(time.seconds()>0 && time.seconds()<3)
                         shooterFlicker.setPosition(.25);
-                    if(time.seconds()>6)
+                    if(time.seconds()>3){
                         shooterFlicker.setPosition(0);
+                        setStateRunning(State.STOP);
+                    }
                     setStateRunning(State.STOP);
                     break;
                 case PARK:
