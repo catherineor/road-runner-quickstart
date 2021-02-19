@@ -26,6 +26,9 @@ public class TeleOpFlicker extends OpMode
     private Servo shooterFlicker;
     boolean changeFlicker = true;
     private float flickerPos = 0;
+    private boolean pressed = false;
+    private boolean done = false;
+    ElapsedTime timer = new ElapsedTime();
 
     //indexing
     private DcMotor index;
@@ -61,6 +64,7 @@ public class TeleOpFlicker extends OpMode
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
         shooterFlicker.setPosition(flickerPos);
+
 
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -122,7 +126,7 @@ public class TeleOpFlicker extends OpMode
         {
             shooterWheel.setPower(0);
         }
-
+        //method 1
         while(gamepad2.a){
             flickerPos=.25f;
             shooterFlicker.setPosition(flickerPos);
@@ -130,7 +134,8 @@ public class TeleOpFlicker extends OpMode
         flickerPos=0;
         shooterFlicker.setPosition(flickerPos);
 
-        /*while(gamepad2.a && changeFlicker)
+        /* method 2
+        while(gamepad2.a && changeFlicker)
         {
             flickerPos = .25f;
             shooterFlicker.setPosition(flickerPos);
@@ -141,6 +146,27 @@ public class TeleOpFlicker extends OpMode
             flickerPos = 0;
             shooterFlicker.setPosition(flickerPos);
             changeFlicker = !changeFlicker;
+        }*/
+
+        /* method4
+        if (gamepad2.a && pressed == false) {
+            done = false;
+            if (!pressed) {
+                timer.reset();
+                pressed = true;
+            }
+        }
+        else if (pressed == true && done == false) {
+            if (timer.seconds() > 0 && timer.seconds() < 0.4) {
+                shooterFlicker.setPosition(0.25f);
+            }
+            if (timer.seconds() > 3) {
+                shooterFlicker.setPosition(0);
+                done = true;
+            }
+        }
+        else if (!(gamepad2.a && done == true)) {
+            pressed = false;
         }*/
 
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
