@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 
-@TeleOp(name="TeleOpScrimmage", group="Iterative Opmode")
+@TeleOp(name="TeleOpFlicker", group="Iterative Opmode")
 
 public class TeleOpFlicker extends OpMode
 {
@@ -34,6 +34,7 @@ public class TeleOpFlicker extends OpMode
     private DcMotor index;
     private Servo indexRight;
     private Servo indexLeft;
+    private boolean switchDirection = false;
 
     //intake
     private DcMotor intake;
@@ -50,6 +51,7 @@ public class TeleOpFlicker extends OpMode
     private DcMotor driveFrontLeft;
     private DcMotor driveBackRight;
     private DcMotor driveBackLeft;
+    private boolean halfPower = false;
 
     @Override
     public void init() {
@@ -75,6 +77,8 @@ public class TeleOpFlicker extends OpMode
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
         wobbleClawTop = hardwareMap.get(Servo.class, "wobbleClawTop");
         wobbleClawBottom = hardwareMap.get(Servo.class, "wobbleClawBottom");
+        wobbleClawTop.setPosition(0);
+        wobbleClawBottom.setPosition(0);
 
         //Drivetrain
         driveFrontRight = hardwareMap.get(DcMotor.class,"driveFrontRight");
@@ -98,13 +102,19 @@ public class TeleOpFlicker extends OpMode
         }
 
         //indexing
-        if(gamepad2.right_trigger>0)
+        if(gamepad2.right_trigger>0 && !switchDirection)
         {
             index.setPower(-1);
         }
         else
         {
             index.setPower(0);
+        }
+        if(gamepad2.b){
+            switchDirection = !switchDirection;
+        }
+        if(switchDirection && gamepad2.right_trigger>0){
+            index.setPower(1);
         }
     /*//if(gamepad2.b && indexLeft.getCurrentPosition == 0 && indexRight.getCurrentPosition == 1)
     {
@@ -120,7 +130,7 @@ public class TeleOpFlicker extends OpMode
         //shooter
         if(gamepad2.left_trigger>0)
         {
-            shooterWheel.setPower(-0.67);
+            shooterWheel.setPower(-0.68);
         }
         else
         {
@@ -148,7 +158,7 @@ public class TeleOpFlicker extends OpMode
             changeFlicker = !changeFlicker;
         }*/
 
-        /* method4
+        /* method3
         if (gamepad2.a && pressed == false) {
             done = false;
             if (!pressed) {
@@ -190,11 +200,25 @@ public class TeleOpFlicker extends OpMode
         float turn = gamepad1.right_stick_x;
 
         // uses variables to set power
-        driveFrontRight.setPower(drive - strafe + turn); //would have to check which is + and -
-        driveFrontLeft.setPower(-drive - strafe - turn);
-        driveBackRight.setPower(-drive - strafe + turn);
-        driveBackLeft.setPower(drive - strafe - turn);
+        if(halfPower){
+            driveFrontRight.setPower((drive - strafe + turn)/2); //would have to check which is + and -
+            driveFrontLeft.setPower((-drive - strafe - turn)/2);
+            driveBackRight.setPower((-drive - strafe + turn)/2);
+            driveBackLeft.setPower((drive - strafe - turn)/2);
         //}
+        }
+        if(!halfPower){
+            driveFrontRight.setPower(drive - strafe + turn); //would have to check which is + and -
+            driveFrontLeft.setPower(-drive - strafe - turn);
+            driveBackRight.setPower(-drive - strafe + turn);
+            driveBackLeft.setPower(drive - strafe - turn);
+        }
+        
+        //half power button?
+        if(gamepad1.a){
+            halfPower = !halfPower;
+        }
+
 
         //wobble goal - need to finish
         if (gamepad1.left_bumper)
