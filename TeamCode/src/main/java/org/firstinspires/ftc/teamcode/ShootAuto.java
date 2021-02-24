@@ -101,7 +101,9 @@ public class ShootAuto extends LinearOpMode {
 
     private enum State {
         TOLL,
-        SHOOT,
+        SHOOT1,
+        SHOOT2,
+        SHOOT3,
         PARK,
         STOP,
     }
@@ -161,37 +163,57 @@ public class ShootAuto extends LinearOpMode {
             //correction = checkDirection();
             switch(state) {
                 case TOLL:
-                    shooterWheel.setPower(.5);
+                    shooterWheel.setPower(-.5);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(5, .5);
+                    encoderCrab(5, .35);
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(58, .5);
-                    setStateRunning(State.SHOOT);
+                    encoderForwards(56, .35);
+                    turn(15);
+                    resetEncoders();
+                    useEncoders();
+                    encoderCrab(24, .35);
+                    setStateRunning(State.SHOOT1);
                     break;
-                case SHOOT:
-                    shooterWheel.setPower(.5);
-                    ElapsedTime time = new ElapsedTime();
-                    while (time.seconds()>0 && time.seconds()<12)
+                case SHOOT1:
+                    shooterWheel.setPower(-.7);
+                    flicker();
+                    //shooterFlicker.setPosition(.15);
+                    //shooterOnly(2, time);
+                    //shooterFlicker.setPosition(0);
+                    /*while (time.seconds()>0 && time.seconds()<12)
                         if (time.seconds() % 4 == 0){
                             shooterFlicker.setPosition(0);
-                            setStateRunning(State.STOP);
                         }
                         else if(time.seconds() % 2 == 0 ){
                             shooterWheel.setPower(.5);
                             shooterFlicker.setPosition(.25);
                         }
-                     /*
-                            if(time.seconds()>0 && time.seconds()<3)
-                        shooterFlicker.setPosition(.25);
-                    if(time.seconds()>3){
-                        shooterFlicker.setPosition(0);
-                        setStateRunning(State.STOP);
+                     
+                    if(time.seconds()>0 && time.seconds()<1.5){
+                        shooterWheel.setPower(.5);
+                        shooterFlicker.setPosition(.15);
                     }
-                    */
-                    setStateRunning(State.STOP);
+                    if(time.seconds()>2){
+                        shooterFlicker.setPosition(0);
+                    }
+                    if(time.seconds()>3 && time.seconds()<4.5){
+                        shooterWheel.setPower(.5);
+                        shooterFlicker.setPosition(.15);
+                    }*/
+                    setStateRunning(State.SHOOT2);
                     break;
+                case SHOOT2:
+                    shooterWheel.setPower(-.7);
+                    encoderCrab(7, .35);
+                    flicker();
+                    setStateRunning(State.STOP);
+                case SHOOT3:
+                    shooterFlicker.setPosition(0);
+                    shooterWheel.setPower(-.7);
+                    shooterFlicker.setPosition(.15);
+                    setStateRunning(State.STOP);
                 case PARK:
                     resetEncoders();
                     useEncoders();
@@ -305,15 +327,25 @@ public class ShootAuto extends LinearOpMode {
         driveBackRight.setPower(0);
         driveBackLeft.setPower(0);
     }
-    public void flicker(ElapsedTime time)
+    public void flicker()
     {
-        if(time.seconds()%3==0){
-            shooterFlicker.setPosition(.5);
-        }
-        else
+        shooterFlicker.setPosition(.25);
+        runtime.reset();
+        while (runtime.seconds()<0.8)
         {
-            flickerPos = 0;
-            shooterFlicker.setPosition(flickerPos);
         }
+        shooterFlicker.setPosition(0);
+    }
+    
+    
+    
+    public void shooterOnly(float seconds,ElapsedTime time){
+        while(time.seconds()>seconds){
+            driveFrontRight.setPower(0);
+            driveFrontLeft.setPower(0);
+            driveBackLeft.setPower(0);
+            driveBackRight.setPower(0);
+        }
+        
     }
 }
