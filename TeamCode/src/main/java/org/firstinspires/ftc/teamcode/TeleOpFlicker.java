@@ -1,5 +1,7 @@
 // Marlbots-2020-2021-TeleOp-Code
 
+// Marlbots-2020-2021-TeleOp-Code
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -26,32 +28,27 @@ public class TeleOpFlicker extends OpMode
     private Servo shooterFlicker;
     boolean changeFlicker = true;
     private float flickerPos = 0;
-    private boolean pressed = false;
-    private boolean done = false;
-    ElapsedTime timer = new ElapsedTime();
 
     //indexing
     private DcMotor index;
     private Servo indexRight;
     private Servo indexLeft;
-    private boolean switchDirection = false;
 
     //intake
     private DcMotor intake;
 
     //wobble goal
-    private Servo wobbleDolly;
+    /*private DcMotor wobbleDolly;
     private Servo wobblePivotTop;
     private Servo wobblePivotBottom;
     private Servo wobbleClawTop;
-    private Servo wobbleClawBottom;
+    private Servo wobbleClawBottom;*/
 
     //Drivetrain
     private DcMotor driveFrontRight;
     private DcMotor driveFrontLeft;
     private DcMotor driveBackRight;
     private DcMotor driveBackLeft;
-    private boolean halfPower = false;
 
     @Override
     public void init() {
@@ -67,18 +64,15 @@ public class TeleOpFlicker extends OpMode
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
         shooterFlicker.setPosition(flickerPos);
 
-
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         //wobble goal
-        wobbleDolly = hardwareMap.get(Servo.class, "wobbleDolly");
+        /*wobbleDolly = hardwareMap.get(DcMotor.class, "wobbleDolly");
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
         wobbleClawTop = hardwareMap.get(Servo.class, "wobbleClawTop");
-        wobbleClawBottom = hardwareMap.get(Servo.class, "wobbleClawBottom");
-        wobbleClawTop.setPosition(0);
-        wobbleClawBottom.setPosition(0);
+        wobbleClawBottom = hardwareMap.get(Servo.class, "wobbleClawBottom");*/
 
         //Drivetrain
         driveFrontRight = hardwareMap.get(DcMotor.class,"driveFrontRight");
@@ -102,19 +96,13 @@ public class TeleOpFlicker extends OpMode
         }
 
         //indexing
-        if(gamepad2.right_trigger>0 && !switchDirection)
+        if(gamepad2.right_trigger>0)
         {
             index.setPower(-1);
         }
         else
         {
             index.setPower(0);
-        }
-        if(gamepad2.b){
-            switchDirection = !switchDirection;
-        }
-        if(switchDirection && gamepad2.right_trigger>0){
-            index.setPower(1);
         }
     /*//if(gamepad2.b && indexLeft.getCurrentPosition == 0 && indexRight.getCurrentPosition == 1)
     {
@@ -130,59 +118,29 @@ public class TeleOpFlicker extends OpMode
         //shooter
         if(gamepad2.left_trigger>0)
         {
-            shooterWheel.setPower(-0.68);
+            shooterWheel.setPower(-0.48);
         }
         else
         {
             shooterWheel.setPower(0);
         }
-        //method 1
-        while(gamepad2.a){
-            flickerPos=.25f;
+
+        while(gamepad2.a)
+        {
+            flickerPos = 1;
             shooterFlicker.setPosition(flickerPos);
+            //changeFlicker = !changeFlicker;
         }
-        flickerPos=0;
+        flickerPos = 0;
         shooterFlicker.setPosition(flickerPos);
+        //changeFlicker = !changeFlicker;
 
-        /* method 2
-        while(gamepad2.a && changeFlicker)
-        {
-            flickerPos = .25f;
-            shooterFlicker.setPosition(flickerPos);
-            changeFlicker = !changeFlicker;
-        }
-        while(!changeFlicker)
-        {
-            flickerPos = 0;
-            shooterFlicker.setPosition(flickerPos);
-            changeFlicker = !changeFlicker;
-        }*/
-
-        /* method3
-        if (gamepad2.a && pressed == false) {
-            done = false;
-            if (!pressed) {
-                timer.reset();
-                pressed = true;
-            }
-        }
-        else if (pressed == true && done == false) {
-            if (timer.seconds() > 0 && timer.seconds() < 2) {
-                shooterFlicker.setPosition(0.25f);
-            }
-            if (timer.seconds() > 2) {
-                shooterFlicker.setPosition(0);
-                done = true;
-            }
-        }
-        else if (!(gamepad2.a && done == true)) {
-            pressed = false;
-        }*/
 
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
         driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
+        shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (driver presses PLAY)
         //waitForStart();
@@ -200,28 +158,14 @@ public class TeleOpFlicker extends OpMode
         float turn = gamepad1.right_stick_x;
 
         // uses variables to set power
-        if(halfPower){
-            driveFrontRight.setPower((drive - strafe + turn)/2); //would have to check which is + and -
-            driveFrontLeft.setPower((-drive - strafe - turn)/2);
-            driveBackRight.setPower((-drive - strafe + turn)/2);
-            driveBackLeft.setPower((drive - strafe - turn)/2);
+        driveFrontRight.setPower(drive - strafe + turn); //would have to check which is + and -
+        driveFrontLeft.setPower(-drive - strafe - turn);
+        driveBackRight.setPower(-drive - strafe + turn);
+        driveBackLeft.setPower(drive - strafe - turn);
         //}
-        }
-        if(!halfPower){
-            driveFrontRight.setPower(drive - strafe + turn); //would have to check which is + and -
-            driveFrontLeft.setPower(-drive - strafe - turn);
-            driveBackRight.setPower(-drive - strafe + turn);
-            driveBackLeft.setPower(drive - strafe - turn);
-        }
-        
-        //half power button?
-        if(gamepad1.a){
-            halfPower = !halfPower;
-        }
-
 
         //wobble goal - need to finish
-        if (gamepad1.left_bumper)
+        /*if (gamepad1.left_bumper)
         {
             wobbleClawBottom.setPosition(1);
         }
@@ -236,7 +180,7 @@ public class TeleOpFlicker extends OpMode
         else
         {
             wobbleClawTop.setPosition(0);
-        }
+        }*/
 
 
 

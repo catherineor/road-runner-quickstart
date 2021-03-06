@@ -1,8 +1,3 @@
-// Marlbots-2020-2021-Auto-Code
-// negative = turning clockwise
-// positive = turning counter clockwise
-// positive = crab right
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -89,11 +84,11 @@ public class ShootAuto extends LinearOpMode {
     private DcMotor intake;
 
     //wobble goal
-    private Servo wobbleDolly;
+    /*private Servo wobbleDolly;
     private Servo wobblePivotTop;
     private Servo wobblePivotBottom;
     private Servo wobbleClawTop;
-    private Servo wobbleClawBottom;
+    private Servo wobbleClawBottom;*/
 
     private double drive, strafe = 0;
 
@@ -133,11 +128,11 @@ public class ShootAuto extends LinearOpMode {
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         //wobble goal
-        wobbleDolly = hardwareMap.get(Servo.class, "wobbleDolly");
+    /*    wobbleDolly = hardwareMap.get(Servo.class, "wobbleDolly");
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
         wobbleClawTop = hardwareMap.get(Servo.class, "wobbleClawTop");
-        wobbleClawBottom = hardwareMap.get(Servo.class, "wobbleClawBottom");
+        wobbleClawBottom = hardwareMap.get(Servo.class, "wobbleClawBottom");*/
         //move pivot to down position, dolly to starting position, and make sure claws are open
 
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -163,61 +158,41 @@ public class ShootAuto extends LinearOpMode {
             //correction = checkDirection();
             switch(state) {
                 case TOLL:
-                    shooterWheel.setPower(-.5);
+                    shooterFlicker.setPosition(0);
+                    shooterWheel.setPower(-.57);
                     resetEncoders();
                     useEncoders();
                     encoderCrab(5, .35);
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(56, .35);
-                    turn(15);
+                    encoderForwards(54, .35);
+                    //turn(17);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(24, .35);
+                    encoderCrab(5, .35);
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
-                    shooterWheel.setPower(-.7);
+                    shooterWheel.setPower(-.57);
                     flicker();
-                    //shooterFlicker.setPosition(.15);
-                    //shooterOnly(2, time);
-                    //shooterFlicker.setPosition(0);
-                    /*while (time.seconds()>0 && time.seconds()<12)
-                        if (time.seconds() % 4 == 0){
-                            shooterFlicker.setPosition(0);
-                        }
-                        else if(time.seconds() % 2 == 0 ){
-                            shooterWheel.setPower(.5);
-                            shooterFlicker.setPosition(.25);
-                        }
-                     
-                    if(time.seconds()>0 && time.seconds()<1.5){
-                        shooterWheel.setPower(.5);
-                        shooterFlicker.setPosition(.15);
-                    }
-                    if(time.seconds()>2){
-                        shooterFlicker.setPosition(0);
-                    }
-                    if(time.seconds()>3 && time.seconds()<4.5){
-                        shooterWheel.setPower(.5);
-                        shooterFlicker.setPosition(.15);
-                    }*/
                     setStateRunning(State.SHOOT2);
                     break;
                 case SHOOT2:
-                    shooterWheel.setPower(-.7);
+                    shooterFlicker.setPosition(0);
+                    shooterWheel.setPower(-.57);
                     encoderCrab(7, .35);
                     flicker();
-                    setStateRunning(State.STOP);
+                    setStateRunning(State.SHOOT3);
                 case SHOOT3:
                     shooterFlicker.setPosition(0);
-                    shooterWheel.setPower(-.7);
-                    shooterFlicker.setPosition(.15);
-                    setStateRunning(State.STOP);
+                    shooterWheel.setPower(-.57);
+                    encoderCrab(5, .35);
+                    flicker();
+                    setStateRunning(State.PARK);
                 case PARK:
                     resetEncoders();
                     useEncoders();
-                    encoderBackwards(5, .5);
+                    encoderForwards(5, .5);
                     setStateRunning(State.STOP);
                     break;
                 case STOP:
@@ -329,16 +304,14 @@ public class ShootAuto extends LinearOpMode {
     }
     public void flicker()
     {
-        shooterFlicker.setPosition(.25);
+        shooterFlicker.setPosition(1);
         runtime.reset();
         while (runtime.seconds()<0.8)
         {
         }
         shooterFlicker.setPosition(0);
     }
-    
-    
-    
+
     public void shooterOnly(float seconds,ElapsedTime time){
         while(time.seconds()>seconds){
             driveFrontRight.setPower(0);
@@ -346,6 +319,20 @@ public class ShootAuto extends LinearOpMode {
             driveBackLeft.setPower(0);
             driveBackRight.setPower(0);
         }
-        
+
+    }
+    public void encoderShoot(int revs, double power){
+        final double WHEEL_DIAMETER = 9; //in cm
+        final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
+        //final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches);
+
+        while(Math.abs(shooterWheel.getCurrentPosition()) < Math.abs(revs)){
+            shooterWheel.setPower(power);
+            //telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
+            telemetry.addData("POSITION", shooterWheel.getCurrentPosition());
+            telemetry.update();
+        }
+        stopMotors();
+        return;
     }
 }
