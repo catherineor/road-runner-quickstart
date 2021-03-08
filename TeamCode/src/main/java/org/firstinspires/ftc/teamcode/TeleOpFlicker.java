@@ -26,8 +26,7 @@ public class TeleOpFlicker extends OpMode
     //shooter
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
-    boolean changeFlicker = true;
-    private float flickerPos = 0;
+    boolean psPower=false;
 
     //indexing
     private DcMotor index;
@@ -49,6 +48,7 @@ public class TeleOpFlicker extends OpMode
     private DcMotor driveFrontLeft;
     private DcMotor driveBackRight;
     private DcMotor driveBackLeft;
+    boolean halfPower = false;
 
     @Override
     public void init() {
@@ -62,7 +62,7 @@ public class TeleOpFlicker extends OpMode
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
-        shooterFlicker.setPosition(flickerPos);
+        shooterFlicker.setPosition(0);
 
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -116,24 +116,29 @@ public class TeleOpFlicker extends OpMode
     }*/
 
         //shooter
-        if(gamepad2.left_trigger>0)
+        if(gamepad2.x)
+        {
+            psPower=!psPower;
+        }
+        if(gamepad2.left_trigger>0 && !psPower)
         {
             shooterWheel.setPower(-0.48);
+        }
+        else if(gamepad2.left_trigger>0 && psPower)
+        {
+            shooterWheel.setPower(-0.35);
         }
         else
         {
             shooterWheel.setPower(0);
         }
-
         while(gamepad2.a)
         {
-            flickerPos = 1;
-            shooterFlicker.setPosition(flickerPos);
-            //changeFlicker = !changeFlicker;
+            shooterFlicker.setPosition(1);
         }
-        flickerPos = 0;
-        shooterFlicker.setPosition(flickerPos);
-        //changeFlicker = !changeFlicker;
+        shooterFlicker.setPosition(0);
+
+
 
 
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
@@ -142,27 +147,29 @@ public class TeleOpFlicker extends OpMode
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
         shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Wait for the game to start (driver presses PLAY)
-        //waitForStart();
-        //runtime.reset();
-
-        // run until the end of the match (driver presses STOP)
-        //loops over and over again, put if statements that control motors and servos based on button presses
-        //while (opModeIsActive()) {
         //Drivetrain
 
-        // slightly adjusted drivetrain code from 2019-2020
-        // drivetrain wheel variables
         float drive = gamepad1.left_stick_x;
         float strafe = gamepad1.left_stick_y;
         float turn = gamepad1.right_stick_x;
 
-        // uses variables to set power
-        driveFrontRight.setPower(drive - strafe + turn); //would have to check which is + and -
-        driveFrontLeft.setPower(-drive - strafe - turn);
-        driveBackRight.setPower(-drive - strafe + turn);
-        driveBackLeft.setPower(drive - strafe - turn);
-        //}
+        if(gamepad1.a)
+        {
+            halfPower=!halfPower;
+        }
+        if (!halfPower) {
+            driveFrontRight.setPower(drive - strafe + turn);
+            driveFrontLeft.setPower(-drive - strafe - turn);
+            driveBackRight.setPower(-drive - strafe + turn);
+            driveBackLeft.setPower(drive - strafe - turn);
+        }
+        else if(halfPower)
+        {
+            driveFrontRight.setPower((drive - strafe + turn)/2);
+            driveFrontLeft.setPower((-drive - strafe - turn)/2);
+            driveBackRight.setPower((-drive - strafe + turn)/2);
+            driveBackLeft.setPower((drive - strafe - turn)/2);
+        }
 
         //wobble goal - need to finish
         /*if (gamepad1.left_bumper)
