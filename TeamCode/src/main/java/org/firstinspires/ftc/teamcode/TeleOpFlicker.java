@@ -1,7 +1,5 @@
 // Marlbots-2020-2021-TeleOp-Code
 
-// Marlbots-2020-2021-TeleOp-Code
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -37,11 +35,12 @@ public class TeleOpFlicker extends OpMode
     private DcMotor intake;
 
     //wobble goal
-    /*private DcMotor wobbleDolly;
+    private DcMotor wobbleLead;
     private Servo wobblePivotTop;
     private Servo wobblePivotBottom;
-    private Servo wobbleClawTop;
-    private Servo wobbleClawBottom;*/
+    private Servo wobbleClaw;
+    boolean clawOpen = true;
+    boolean inBot=true;
 
     //Drivetrain
     private DcMotor driveFrontRight;
@@ -68,11 +67,14 @@ public class TeleOpFlicker extends OpMode
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         //wobble goal
-        /*wobbleDolly = hardwareMap.get(DcMotor.class, "wobbleDolly");
+        wobbleLead = hardwareMap.get(DcMotor.class, "wobbleLead");
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
-        wobbleClawTop = hardwareMap.get(Servo.class, "wobbleClawTop");
-        wobbleClawBottom = hardwareMap.get(Servo.class, "wobbleClawBottom");*/
+        wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
+        wobblePivotTop.setPosition(.2);
+        wobblePivotBottom.setPosition(.8);
+        wobbleClaw.setPosition(1);
+        
 
         //Drivetrain
         driveFrontRight = hardwareMap.get(DcMotor.class,"driveFrontRight");
@@ -146,6 +148,7 @@ public class TeleOpFlicker extends OpMode
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
         shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //wobbleClaw.setDirection(Servo.Direction.REVERSE);
 
         //Drivetrain
 
@@ -171,25 +174,40 @@ public class TeleOpFlicker extends OpMode
             driveBackLeft.setPower((drive - strafe - turn)/2);
         }
 
-        //wobble goal - need to finish
-        /*if (gamepad1.left_bumper)
+        //wobble goal
+        if(gamepad2.left_stick_y>0)
         {
-            wobbleClawBottom.setPosition(1);
+            wobbleLead.setPower(1);
         }
-        else
+        else if(gamepad2.left_stick_y<0)
         {
-            wobbleClawBottom.setPosition(0);
+            wobbleLead.setPower(-1);
         }
-        if (gamepad1.right_bumper)
+        wobbleLead.setPower(0);
+        while(gamepad2.x)
         {
-            wobbleClawTop.setPosition(1);
+            wobbleClaw.setPosition(0);
         }
-        else
+        wobbleClaw.setPosition(1);
+        /*if (gamepad2.x && clawOpen)
         {
-            wobbleClawTop.setPosition(0);
+            wobbleClaw.setPosition(1);
+            clawOpen=!clawOpen;
+        }
+        if(gamepad2.x && !clawOpen)
+        {
+            wobbleClaw.setPosition(0);
+            clawOpen=!clawOpen;
         }*/
-
-
-
+        if (gamepad2.y)
+        {
+            wobblePivotTop.setPosition(.2);
+            wobblePivotBottom.setPosition(.8);
+        }
+        if (gamepad2.b)
+        {
+            wobblePivotTop.setPosition(.5);
+            wobblePivotBottom.setPosition(.5);
+        }
     }
 }
