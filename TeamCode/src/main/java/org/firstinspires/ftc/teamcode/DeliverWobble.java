@@ -56,10 +56,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 @Autonomous(name="Shoot Auto", group="Linear Opmode")
 
-public class ShootAuto extends LinearOpMode {
+public class DeliverWobble extends LinearOpMode {
     public State state;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -91,9 +93,20 @@ public class ShootAuto extends LinearOpMode {
 
     private double drive, strafe = 0;
 
+    //ring detection
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
     private int ringHeight;
 
+    private static final String VUFORIA_KEY =
+            "AfDxTOz/////AAABmZP0ZciU3EdTii04SAkq0dI8nEBh4mM/bXMf3H6bRJJbH/XCSdLIe5SDSavwPb0wJvUdnsmXcal43ZW2YJRG6j65bfewYJPCb+jGn7IW7kd5rKWs11G7CtFSMGEOhA5NU8gi39eHW0pmXC8NEXBn3CmK67TIENGm/YBN6f+xmkmDvBQjaJc2hJ93HPvhAnIiAbJT9/fWijwg9IovTok/xAcAcuIKz3XK/lnJXu6XdJ1MyRtoXO7yf1W4ReDHngWCtKI9B7bAnD6zPNhZoVLVzl34E8XKed/dGShIoCmIUTe0HoUniP0ye3AnwhFgxLhgPcysF8uVqKN0VKBpDH1zU7J7keZdjWHM6jvn29oLMK7W";
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+
     private enum State {
+        TOSCAN,
+        SCAN,
         TOLL,
         SHOOT1,
         SHOOT2,
@@ -132,6 +145,14 @@ public class ShootAuto extends LinearOpMode {
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
         wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
 
+        //ring detection
+        initVuforia();
+        initTfod();
+        if (tfod != null) {
+            tfod.activate();
+            tfod.setZoom(2.5, 16.0/9.0);
+        }
+
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
 
@@ -147,27 +168,75 @@ public class ShootAuto extends LinearOpMode {
         waitForStart();
         resetEncoders();
         useEncoders();
-        state = State.TOLL;
+        state = State.TOSCAN;
         runtime.reset();
         ElapsedTime autoTime = new ElapsedTime();
         while (opModeIsActive())
         {
-            //correction = checkDirection();
             switch(state) {
+                case TOSCAN:
+                    resetEncoders();
+                    useEncoders();
+                    encoderForwards(10, .5);
+                    setStateRunning(State.SCAN);
+                    break;
+                case SCAN:
+                    if (tfod != null) {
+                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                        if (updatedRecognitions != null) {
+                            telemetry.addData("# Object Detected", updatedRecognitions.size());
+                            //int i = 0;
+                            for (Recognition r : updatedRecognitions) {
+                                if(r.getLabel().equals(LABEL_FIRST_ELEMENT))
+                                {
+                                    ringHeight = 4;
+                                }
+                                else if(r.getLabel().equals(LABEL_SECOND_ELEMENT))
+                                {
+                                    ringHeight = 1;
+                                }
+                                else
+                                {
+                                    ringHeight = 0;
+                                }
+                                /*telemetry.addData(String.format("label (%d)", i), r.getLabel());
+                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                        r.getLeft(), r.getTop());
+                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                        r.getRight(), r.getBottom());*/
+                            }
+                            telemetry.addData("# of rings", ringHeight);
+                            telemetry.update();
+                        }
+                    }
+                    setStateRunning(State.TOLL);
+                    break;
                 case TOLL:
                     shooterFlicker.setPosition(0);
                     shooterWheel.setPower(-.57);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(5, .35);
+                    if (ringHeight == 4)
+                    {
+                        encoderForwards(30,.5);
+                    }
+                    else if (ringHeight == 1)
+                    {
+                        encoderForwards(20,.5);
+                    }
+                    else
+                    {
+                        encoderForwards(10,.5);
+                    }
+                    /*encoderCrab(5, .35);
                     resetEncoders();
                     useEncoders();
                     encoderForwards(54, .35);
                     //turn(17);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(5, .35);
-                    setStateRunning(State.SHOOT1);
+                    encoderCrab(5, .35);*/
+                    setStateRunning(State.STOP);
                     break;
                 case SHOOT1:
                     shooterWheel.setPower(-.57);
@@ -332,4 +401,19 @@ public class ShootAuto extends LinearOpMode {
         stopMotors();
         return;
     }
+    private void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+    }
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
 }
+

@@ -74,7 +74,6 @@ public class TeleOpFlicker extends OpMode
         wobblePivotTop.setPosition(.2);
         wobblePivotBottom.setPosition(.8);
         wobbleClaw.setPosition(1);
-        
 
         //Drivetrain
         driveFrontRight = hardwareMap.get(DcMotor.class,"driveFrontRight");
@@ -106,6 +105,7 @@ public class TeleOpFlicker extends OpMode
         {
             index.setPower(0);
         }
+
     /*//if(gamepad2.b && indexLeft.getCurrentPosition == 0 && indexRight.getCurrentPosition == 1)
     {
       indexLeft.setPosition(.5); //check negative or positive (one is clockwise, other counter)
@@ -118,40 +118,34 @@ public class TeleOpFlicker extends OpMode
     }*/
 
         //shooter
-        if(gamepad2.x)
+        /*if(gamepad2.x)
         {
             psPower=!psPower;
-        }
-        if(gamepad2.left_trigger>0 && !psPower)
-        {
-            shooterWheel.setPower(-0.48);
         }
         else if(gamepad2.left_trigger>0 && psPower)
         {
             shooterWheel.setPower(-0.35);
         }
-        else
+         */
+        if(gamepad2.left_trigger>0)
         {
-            shooterWheel.setPower(0);
+            shooterWheel.setPower(-0.48);
         }
+        shooterWheel.setPower(0);
+
         while(gamepad2.a)
         {
             shooterFlicker.setPosition(1);
         }
         shooterFlicker.setPosition(0);
 
-
-
-
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
         driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
         shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //wobbleClaw.setDirection(Servo.Direction.REVERSE);
 
         //Drivetrain
-
         float drive = gamepad1.left_stick_x;
         float strafe = gamepad1.left_stick_y;
         float turn = gamepad1.right_stick_x;

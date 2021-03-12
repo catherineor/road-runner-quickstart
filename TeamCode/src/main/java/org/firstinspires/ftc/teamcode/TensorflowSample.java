@@ -1,5 +1,3 @@
-
-//tensorflow github:  https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-TensorFlow-Lite-for-the-Ultimate-Goal-Challenge
 /* Copyright (c) 2019 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -32,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
@@ -51,9 +50,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-//@Disabled
-public class TensorflowSampleEdited extends LinearOpMode {
+@Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+
+public class TensorflowSample extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
@@ -122,34 +121,14 @@ public class TensorflowSampleEdited extends LinearOpMode {
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         // step through the list of recognitions and display boundary info.
-                        if(updatedRecognitions.size()==0){
-                            telemetry.addData("TFOD", "No rings detected");
-                            telemetry.addData("Target Zone", "A");
+                        int i = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                    recognition.getLeft(), recognition.getTop());
+                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                    recognition.getRight(), recognition.getBottom());
                         }
-                        else
-                        {
-                            int i = 0;
-                            for (Recognition recognition : updatedRecognitions) {
-                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                        recognition.getLeft(), recognition.getTop());
-                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                        recognition.getRight(), recognition.getBottom());
-                                if (recognition.getLabel().equals("Single"))
-                                {
-                                    telemetry.addData("1 ring-Target Zone", "B");
-                                }
-                                else if (recognition.getLabel().equals("Quad"))
-                                {
-                                    telemetry.addData("4 rings-Target Zone", "C");
-                                }
-                                else {
-                                    telemetry.addData("Target Zone", "UNKNOWN");
-                                }
-                            }
-
-                        }
-
                         telemetry.update();
                     }
                 }
@@ -171,7 +150,7 @@ public class TensorflowSampleEdited extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        //parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
