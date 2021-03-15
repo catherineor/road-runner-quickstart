@@ -111,6 +111,8 @@ public class DeliverWobble extends LinearOpMode {
         SHOOT1,
         SHOOT2,
         SHOOT3,
+        DELIVER,
+        INTAKE,
         PARK,
         STOP,
     }
@@ -254,7 +256,15 @@ public class DeliverWobble extends LinearOpMode {
                     shooterWheel.setPower(-.57);
                     encoderCrab(5, .35);
                     flicker();
+                    setStateRunning(State.INTAKE);
+                case DELIVER:
+                    setStateRunning(State.INTAKE);
+                    break;
+                case INTAKE:
+                    intake.setPower(1);
+                    index.setPower(-1);
                     setStateRunning(State.PARK);
+                    break;
                 case PARK:
                     resetEncoders();
                     useEncoders();
@@ -262,6 +272,7 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.STOP);
                     break;
                 case STOP:
+                    shooterWheel.setPower(0);
                     stopMotors();
             }
         }
