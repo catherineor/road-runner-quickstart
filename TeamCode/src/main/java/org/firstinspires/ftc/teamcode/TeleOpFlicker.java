@@ -25,6 +25,7 @@ public class TeleOpFlicker extends OpMode
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
     boolean psPower=false;
+    float shooterPower = 0;
 
     //indexing
     private DcMotor index;
@@ -39,7 +40,7 @@ public class TeleOpFlicker extends OpMode
     private Servo wobblePivotTop;
     private Servo wobblePivotBottom;
     private Servo wobbleClaw;
-    boolean clawOpen = true;
+    boolean clawOpen = false;
     boolean inBot=true;
 
     //Drivetrain
@@ -71,9 +72,10 @@ public class TeleOpFlicker extends OpMode
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
         wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
-        wobblePivotTop.setPosition(.2);
-        wobblePivotBottom.setPosition(.8);
+        wobblePivotTop.setPosition(0);
+        wobblePivotBottom.setPosition(1);
         wobbleClaw.setPosition(1);
+        
 
         //Drivetrain
         driveFrontRight = hardwareMap.get(DcMotor.class,"driveFrontRight");
@@ -85,27 +87,23 @@ public class TeleOpFlicker extends OpMode
     }
     @Override
     public void loop() {
-        //intake
-        if(gamepad2.right_bumper){
-            intake.setPower(1);
-        }
-        else if(gamepad2.left_bumper){
+        //intake and indexing
+        if(gamepad2.left_bumper){
             intake.setPower(-1);
+            index.setPower(1);
+
         }
         else{
             intake.setPower(0);
-        }
-
-        //indexing
-        if(gamepad2.right_trigger>0)
-        {
-            index.setPower(-1);
-        }
-        else
-        {
             index.setPower(0);
         }
-
+        if(gamepad2.right_trigger>0)
+        {
+            intake.setPower(1);
+            index.setPower(-1);
+        }
+        intake.setPower(0);
+        index.setPower(0);
     /*//if(gamepad2.b && indexLeft.getCurrentPosition == 0 && indexRight.getCurrentPosition == 1)
     {
       indexLeft.setPosition(.5); //check negative or positive (one is clockwise, other counter)
@@ -118,34 +116,44 @@ public class TeleOpFlicker extends OpMode
     }*/
 
         //shooter
-        /*if(gamepad2.x)
+        shooterWheel.setPower(shooterPower);
+        if(gamepad2.x)
         {
             psPower=!psPower;
+            shooterPower=-.25;
         }
-        else if(gamepad2.left_trigger>0 && psPower)
-        {
-            shooterWheel.setPower(-0.35);
-        }
-         */
         if(gamepad2.left_trigger>0)
         {
-            shooterWheel.setPower(-0.48);
+            shooterPower = -.48;
+            //shooterWheel.setPower(-0.48);
         }
-        shooterWheel.setPower(0);
-
+        else if(gamepad2.left_trigger>0)
+        {
+            shooterPower = 0
+            //shooterWheel.setPower(-0.25);
+        }
+        else
+        {
+            shooterWheel.setPower(0);
+        }
         while(gamepad2.a)
         {
             shooterFlicker.setPosition(1);
         }
         shooterFlicker.setPosition(0);
 
+
+
+
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
         driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
         shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //wobbleClaw.setDirection(Servo.Direction.REVERSE);
 
         //Drivetrain
+
         float drive = gamepad1.left_stick_x;
         float strafe = gamepad1.left_stick_y;
         float turn = gamepad1.right_stick_x;
@@ -178,30 +186,35 @@ public class TeleOpFlicker extends OpMode
             wobbleLead.setPower(-1);
         }
         wobbleLead.setPower(0);
-        while(gamepad2.x)
+        
+        /*while(gamepad2.x)
         {
-            wobbleClaw.setPosition(0);
+            wobbleClaw.setPosition(0.7);
         }
-        wobbleClaw.setPosition(1);
-        /*if (gamepad2.x && clawOpen)
+        wobbleClaw.setPosition(1);*/
+        
+        if (gamepad2.x && clawOpen)
         {
             wobbleClaw.setPosition(1);
             clawOpen=!clawOpen;
         }
         if(gamepad2.x && !clawOpen)
         {
-            wobbleClaw.setPosition(0);
+            wobbleClaw.setPosition(.7);
             clawOpen=!clawOpen;
-        }*/
-        if (gamepad2.y)
-        {
-            wobblePivotTop.setPosition(.2);
-            wobblePivotBottom.setPosition(.8);
         }
-        if (gamepad2.b)
+        
+        if (gamepad2.y && inBot)
         {
-            wobblePivotTop.setPosition(.5);
-            wobblePivotBottom.setPosition(.5);
+            wobblePivotTop.setPosition(1);
+            wobblePivotBottom.setPosition(0);
+            inBot=!inBot;
+        }
+        if (gamepad2.y && !inBot)
+        {
+            wobblePivotTop.setPosition(0);
+            wobblePivotBottom.setPosition(1);
+            inBot=!inBot;
         }
     }
 }
