@@ -25,7 +25,7 @@ public class TeleOpFlicker extends OpMode
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
     boolean psPower=false;
-    float shooterPower = 0;
+    double shooterPower = 0;
 
     //indexing
     private DcMotor index;
@@ -56,8 +56,10 @@ public class TeleOpFlicker extends OpMode
 
         //indexing
         index = hardwareMap.get(DcMotor.class, "index");
-        //indexRight = hardwareMap.get(Servo.class, "indexRight");
-        //indexLeft = harwareMap.get(Servo.class, "indexLeft");
+        indexRight = hardwareMap.get(Servo.class, "indexRight");
+        indexLeft = hardwareMap.get(Servo.class, "indexLeft");
+        indexLeft.setPosition(0);
+        indexRight.setPosition(1);
 
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
@@ -91,22 +93,18 @@ public class TeleOpFlicker extends OpMode
         if(gamepad2.left_bumper){
             intake.setPower(-1);
             index.setPower(1);
-
         }
-        else{
-            intake.setPower(0);
-            index.setPower(0);
-        }
-        if(gamepad2.right_trigger>0)
+        else if(gamepad2.right_bumper)
         {
             intake.setPower(1);
             index.setPower(-1);
         }
         intake.setPower(0);
         index.setPower(0);
+
     /*//if(gamepad2.b && indexLeft.getCurrentPosition == 0 && indexRight.getCurrentPosition == 1)
     {
-      indexLeft.setPosition(.5); //check negative or positive (one is clockwise, other counter)
+      indexLeft.setPosition(.5);
       indexRight.setPosition(.5);
     }
     else if (gamepad2.b && indexLeft.setPosition(.5) && indexRight.setPosition(.5))
@@ -117,43 +115,49 @@ public class TeleOpFlicker extends OpMode
 
         //shooter
         shooterWheel.setPower(shooterPower);
-        if(gamepad2.x)
+        if(gamepad2.b)
         {
             psPower=!psPower;
-            shooterPower=-.25;
         }
-        if(gamepad2.left_trigger>0)
+        if(gamepad2.left_trigger>0 && !psPower)
         {
             shooterPower = -.48;
-            //shooterWheel.setPower(-0.48);
         }
-        else if(gamepad2.left_trigger>0)
+        else if(gamepad2.left_trigger>0 && psPower)
         {
-            shooterPower = 0
-            //shooterWheel.setPower(-0.25);
+            shooterPower = -.25;
+        }
+        else
+            shooterPower = 0;
+        /*if(gamepad2.x)
+        {
+            psPower=!psPower;
+        }
+        if(gamepad2.left_trigger>0 && !psPower)
+        {
+            shooterWheel.setPower(-0.25);
+        }
+        else if(gamepad2.left_trigger>0 && psPower)
+        {
+            shooterWheel.setPower(-0.48);
         }
         else
         {
             shooterWheel.setPower(0);
-        }
+        }*/
         while(gamepad2.a)
         {
             shooterFlicker.setPosition(1);
         }
         shooterFlicker.setPosition(0);
 
-
-
-
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
         driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
         shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //wobbleClaw.setDirection(Servo.Direction.REVERSE);
 
         //Drivetrain
-
         float drive = gamepad1.left_stick_x;
         float strafe = gamepad1.left_stick_y;
         float turn = gamepad1.right_stick_x;
