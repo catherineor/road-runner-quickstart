@@ -242,11 +242,6 @@ public class DeliverWobble extends LinearOpMode {
                                     {
                                         ringHeight = 0;
                                     }
-                                    /*telemetry.addData(String.format("label (%d)", i), r.getLabel());
-                                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                            r.getLeft(), r.getTop());
-                                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                            r.getRight(), r.getBottom());*/
                                     telemetry.addData("# of rings", ringHeight);
                                     telemetry.update();
                                 }
@@ -271,7 +266,6 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
-                    turnDegrees(1, .5);
                     shooterWheel.setPower(-.4);
                     flicker();
                     setStateRunning(State.SHOOT2);
@@ -319,10 +313,10 @@ public class DeliverWobble extends LinearOpMode {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(22, .5);
-                        sleep(1000);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
+                        sleep(1000);
                     }
                     setStateRunning(State.PARK);
                     break;
@@ -343,8 +337,8 @@ public class DeliverWobble extends LinearOpMode {
                     else if(ringHeight==4)
                     {
                         wobbleClaw.setPosition(0);
-                        wobblePivotTop.setPosition(0);
-                        wobblePivotBottom.setPosition(1);
+                        //wobblePivotTop.setPosition(0);
+                        //wobblePivotBottom.setPosition(1);
                         resetEncoders();
                         useEncoders();
                         encoderBackwards(15, .5);
