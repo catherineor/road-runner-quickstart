@@ -135,7 +135,8 @@ public class DeliverWobble extends LinearOpMode {
         index = hardwareMap.get(DcMotor.class, "index");
         indexRight = hardwareMap.get(Servo.class, "indexRight");
         indexLeft = hardwareMap.get(Servo.class, "indexLeft");
-        //open trapdoor on initalization
+        indexLeft.setPosition(0);
+        indexRight.setPosition(1);
 
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
@@ -213,6 +214,7 @@ public class DeliverWobble extends LinearOpMode {
         {
             switch(state) {
                 case TOSCAN:
+                    shooterWheel.setPower(-.4);
                     resetEncoders();
                     useEncoders();
                     encoderForwards(15, .5);
@@ -222,6 +224,7 @@ public class DeliverWobble extends LinearOpMode {
                     if (tfod != null) {
                         while(autoTime.seconds() < 3)
                         {
+                            shooterWheel.setPower(-.4);
                             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                             if (updatedRecognitions != null) {
                                 telemetry.addData("# Object Detected", updatedRecognitions.size());
@@ -254,76 +257,74 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.TOLL);
                     break;
                 case TOLL:
+                    shooterWheel.setPower(-.4);
                     shooterFlicker.setPosition(0);
-                    shooterWheel.setPower(-.53);
                     resetEncoders();
                     useEncoders();
                     encoderCrab(10, .35);
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(37, .35);
+                    encoderForwards(37, .5);
                     resetEncoders();
                     useEncoders();
                     encoderCrab(6, -.35);
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
-                    shooterWheel.setPower(-.53);
+                    turnDegrees(1, .5);
+                    shooterWheel.setPower(-.4);
                     flicker();
                     setStateRunning(State.SHOOT2);
                     break;
                 case SHOOT2:
-                    turnDegrees(-5, .5);
-                    shooterWheel.setPower(-.53);
+                    turnDegrees(-1, .5);
+                    shooterWheel.setPower(-.4);
                     shooterFlicker.setPosition(0);
                     flicker();
-                    setStateRunning(State.STOP);
+                    setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
-                    turnDegrees(-5, .5);
+                    turnDegrees(-2, .5);
                     shooterFlicker.setPosition(0);
-                    shooterWheel.setPower(-.53);
+                    shooterWheel.setPower(-.4);
                     flicker();
-                    setStateRunning(State.STOP);
+                    setStateRunning(State.DELIVER);
                     break;
                 case DELIVER:
                     if(ringHeight==0)
                     {
-                        turnDegrees(90,-.25);
+                        turnDegrees(90,.25);
                         resetEncoders();
                         useEncoders();
                         encoderForwards(30, .35);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(0);
+                        wobbleClaw.setPosition(1);
                     }
                     else if(ringHeight==1)
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(20, .35);
-                        turnDegrees(90,-.25);
-                        resetEncoders();
-                        useEncoders();
-                        encoderForwards(10, .35);
+                        encoderCrab(5, -.35);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(0);
+                        wobbleClaw.setPosition(1);
                     }
                     else if(ringHeight==4)
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(20, .35);
-                        turnDegrees(90,-.25);
+                        encoderForwards(50, .5);
+                        turnDegrees(90,.5);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(30, .35);
+                        encoderForwards(22, .5);
+                        sleep(1000);
+                        wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(0);
                     }
-                    setStateRunning(State.STOP);
+                    setStateRunning(State.PARK);
                     break;
                 case INTAKE:
                     //intake.setPower(1);
@@ -331,9 +332,27 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.PARK);
                     break;
                 case PARK:
-                    resetEncoders();
-                    useEncoders();
-                    //encoderForwards(5, .5);
+                    if(ringHeight==0)
+                    {
+                        
+                    }
+                    else if(ringHeight==1)
+                    {
+                        
+                    }
+                    else if(ringHeight==4)
+                    {
+                        wobbleClaw.setPosition(0);
+                        wobblePivotTop.setPosition(0);
+                        wobblePivotBottom.setPosition(1);
+                        resetEncoders();
+                        useEncoders();
+                        encoderBackwards(15, .5);
+                        turnDegrees(85,.35);
+                        resetEncoders();
+                        useEncoders();
+                        encoderForwards(35, .5);
+                    }
                     setStateRunning(State.STOP);
                     break;
                 case STOP:
