@@ -24,13 +24,12 @@ public class TeleOpFlicker extends OpMode
     //shooter
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
-    boolean psPower=false;
-    double shooterPower = 0;
 
     //indexing
     private DcMotor index;
     private Servo indexRight;
     private Servo indexLeft;
+    boolean doorOpen = true;
 
     //intake
     private DcMotor intake;
@@ -102,49 +101,17 @@ public class TeleOpFlicker extends OpMode
         intake.setPower(0);
         index.setPower(0);
 
-    /*//if(gamepad2.b && indexLeft.getCurrentPosition == 0 && indexRight.getCurrentPosition == 1)
-    {
-      indexLeft.setPosition(.5);
-      indexRight.setPosition(.5);
-    }
-    else if (gamepad2.b && indexLeft.setPosition(.5) && indexRight.setPosition(.5))
-    {
-      indexLeft.setPosition(0);
-      indexRight.setPosition(1);
-    }*/
-
         //shooter
-        shooterWheel.setPower(shooterPower);
-        if(gamepad2.b)
+        if(gamepad2.left_trigger>0)
         {
-            psPower=!psPower;
+            shooterWheel.setPower(-.48);
         }
-        if(gamepad2.left_trigger>0 && !psPower)
+        else if(gamepad2.right_trigger>0)
         {
-            shooterPower = -.48;
+            shooterWheel.setPower(-.25);
         }
-        else if(gamepad2.left_trigger>0 && psPower)
-        {
-            shooterPower = -.25;
-        }
-        else
-            shooterPower = 0;
-        /*if(gamepad2.x)
-        {
-            psPower=!psPower;
-        }
-        if(gamepad2.left_trigger>0 && !psPower)
-        {
-            shooterWheel.setPower(-0.25);
-        }
-        else if(gamepad2.left_trigger>0 && psPower)
-        {
-            shooterWheel.setPower(-0.48);
-        }
-        else
-        {
-            shooterWheel.setPower(0);
-        }*/
+        shooterWheel.setPower(0);
+        
         while(gamepad2.a)
         {
             shooterFlicker.setPosition(1);
@@ -191,12 +158,6 @@ public class TeleOpFlicker extends OpMode
         }
         wobbleLead.setPower(0);
         
-        /*while(gamepad2.x)
-        {
-            wobbleClaw.setPosition(0.7);
-        }
-        wobbleClaw.setPosition(1);*/
-        
         if (gamepad2.x && clawOpen)
         {
             wobbleClaw.setPosition(1);
@@ -214,11 +175,24 @@ public class TeleOpFlicker extends OpMode
             wobblePivotBottom.setPosition(0);
             inBot=!inBot;
         }
-        if (gamepad2.y && !inBot)
+        else if (gamepad2.y && !inBot)
         {
             wobblePivotTop.setPosition(0);
             wobblePivotBottom.setPosition(1);
             inBot=!inBot;
+        }
+        
+        if(gamepad2.b && doorOpen)
+        {
+            indexRight.setPosition(.75);
+            indexLeft.setPosition(.34);
+            doorOpen=!doorOpen;
+        }
+        else if(gamepad2.b && !doorOpen)
+        {
+            indexRight.setPosition(1);
+            indexLeft.setPosition(0);
+            doorOpen=!doorOpen;
         }
     }
 }
