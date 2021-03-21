@@ -116,6 +116,7 @@ public class DeliverWobble extends LinearOpMode {
         SHOOT2,
         SHOOT3,
         DELIVER,
+        TOLL2,
         INTAKE,
         PARK,
         STOP,
@@ -228,7 +229,6 @@ public class DeliverWobble extends LinearOpMode {
                             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                             if (updatedRecognitions != null) {
                                 telemetry.addData("# Object Detected", updatedRecognitions.size());
-                                //int i = 0;
                                 for (Recognition r : updatedRecognitions) {
                                     if(r.getLabel().equals("Quad"))
                                     {
@@ -245,7 +245,6 @@ public class DeliverWobble extends LinearOpMode {
                                     telemetry.addData("# of rings", ringHeight);
                                     telemetry.update();
                                 }
-                                
                             }
                         }
                     }
@@ -271,45 +270,53 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.SHOOT2);
                     break;
                 case SHOOT2:
-                    turnDegrees(-1, .5);
                     shooterWheel.setPower(-.4);
+                    turnDegrees(-1, .5);
                     shooterFlicker.setPosition(0);
                     flicker();
                     setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
+                    shooterWheel.setPower(-.4);
                     turnDegrees(-2, .5);
                     shooterFlicker.setPosition(0);
-                    shooterWheel.setPower(-.4);
                     flicker();
                     setStateRunning(State.DELIVER);
                     break;
                 case DELIVER:
+                    telemetry.addData("# of rings", ringHeight);
+                    telemetry.update();
                     if(ringHeight==0)
                     {
-                        turnDegrees(90,.25);
+                        turnDegrees(90,.5);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(30, .35);
+                        encoderForwards(22, .35);
+                        wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(1);
+                        sleep(1000);
                     }
                     else if(ringHeight==1)
                     {
+                        turnDegrees(5,.5);
                         resetEncoders();
                         useEncoders();
                         encoderCrab(5, -.35);
+                        resetEncoders();
+                        useEncoders();
+                        encoderForwards(15, .5);
+                        wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(1);
+                        sleep(1000);
                     }
                     else if(ringHeight==4)
                     {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(50, .5);
-                        turnDegrees(90,.5);
+                        turnDegrees(90,.35);
                         resetEncoders();
                         useEncoders();
                         encoderForwards(22, .5);
@@ -318,27 +325,32 @@ public class DeliverWobble extends LinearOpMode {
                         wobblePivotBottom.setPosition(0);
                         sleep(1000);
                     }
-                    setStateRunning(State.PARK);
+                    setStateRunning(State.TOLL2);
                     break;
-                case INTAKE:
-                    //intake.setPower(1);
-                    //index.setPower(-1);
-                    setStateRunning(State.PARK);
-                    break;
-                case PARK:
+                case TOLL2:
+                    telemetry.addData("# of rings", ringHeight);
+                    telemetry.update();
                     if(ringHeight==0)
                     {
-                        
+                        wobbleClaw.setPosition(0);
+                        resetEncoders();
+                        useEncoders();
+                        encoderBackwards(15, .5);
+                        turnDegrees(85,.35);
+                        resetEncoders();
+                        useEncoders();
+                        encoderForwards(15, .5);
                     }
                     else if(ringHeight==1)
                     {
-                        
+                        wobbleClaw.setPosition(0);
+                        resetEncoders();
+                        useEncoders();
+                        encoderBackwards(15, .5);
                     }
                     else if(ringHeight==4)
                     {
                         wobbleClaw.setPosition(0);
-                        //wobblePivotTop.setPosition(0);
-                        //wobblePivotBottom.setPosition(1);
                         resetEncoders();
                         useEncoders();
                         encoderBackwards(15, .5);
@@ -349,8 +361,23 @@ public class DeliverWobble extends LinearOpMode {
                     }
                     setStateRunning(State.STOP);
                     break;
+                case INTAKE:
+                    intake.setPower(1);
+                    index.setPower(-1);
+                    resetEncoders();
+                    useEncoders();
+                    encoderBackwards(15, .5);
+                    setStateRunning(State.PARK);
+                    break;
+                case PARK:
+                    resetEncoders();
+                    useEncoders();
+                    encoderForwards(15, .5);
+                    break;
                 case STOP:
                     shooterWheel.setPower(0);
+                    intake.setPower(0);
+                    index.setPower(0);
                     stopMotors();
                     break;
             }
