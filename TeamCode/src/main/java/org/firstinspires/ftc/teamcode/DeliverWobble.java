@@ -312,13 +312,14 @@ public class DeliverWobble extends LinearOpMode {
                     }
                     else if(ringHeight==4)
                     {
+                        turnDegrees(5,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(50, .5);
-                        turnDegrees(90,.35);
+                        encoderForwards(48, .5);
+                        turnDegrees(85,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(22, .5);
+                        encoderForwards(21, .5);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
