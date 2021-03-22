@@ -170,8 +170,6 @@ public class DeliverWobble extends LinearOpMode {
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = false;
-        //parameters.loggingTag          = "IMU";
-        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -213,6 +211,8 @@ public class DeliverWobble extends LinearOpMode {
         ElapsedTime autoTime = new ElapsedTime();
         while (opModeIsActive())
         {
+            telemetry.addData("# of rings", ringHeight);
+            telemetry.update();
             switch(state) {
                 case TOSCAN:
                     shooterWheel.setPower(-.4);
@@ -284,8 +284,7 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.DELIVER);
                     break;
                 case DELIVER:
-                    telemetry.addData("# of rings", ringHeight);
-                    telemetry.update();
+                    shooterWheel.setPower(0);
                     if(ringHeight==0)
                     {
                         turnDegrees(90,.5);
@@ -328,8 +327,6 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.TOLL2);
                     break;
                 case TOLL2:
-                    telemetry.addData("# of rings", ringHeight);
-                    telemetry.update();
                     if(ringHeight==0)
                     {
                         wobbleClaw.setPosition(0);
@@ -366,18 +363,17 @@ public class DeliverWobble extends LinearOpMode {
                     index.setPower(-1);
                     resetEncoders();
                     useEncoders();
-                    encoderBackwards(15, .5);
+                    encoderBackwards(15, .25);
                     setStateRunning(State.PARK);
                     break;
                 case PARK:
+                    intake.setPower(0);
+                    index.setPower(0);
                     resetEncoders();
                     useEncoders();
                     encoderForwards(15, .5);
                     break;
                 case STOP:
-                    shooterWheel.setPower(0);
-                    intake.setPower(0);
-                    index.setPower(0);
                     stopMotors();
                     break;
             }
@@ -477,17 +473,13 @@ public class DeliverWobble extends LinearOpMode {
         driveBackRight.setPower(power);
         driveBackLeft.setPower(-power);
     }
-    
-    public void turnTime(double time, double power)
+
+    public void stopMotors()
     {
-        runtime.reset();
-        while(runtime.seconds()<time)
-        {
-            driveFrontRight.setPower(power);
-            driveFrontLeft.setPower(-power);
-            driveBackRight.setPower(power);
-            driveBackLeft.setPower(-power);
-        }
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
     }
 
     private void resetAngle()
@@ -582,13 +574,8 @@ public class DeliverWobble extends LinearOpMode {
         resetAngle();
         return;
     }
-    public void stopMotors()
-    {
-        driveFrontRight.setPower(0);
-        driveFrontLeft.setPower(0);
-        driveBackRight.setPower(0);
-        driveBackLeft.setPower(0);
-    }
+
+
     public void flicker()
     {
         shooterFlicker.setPosition(1);
@@ -599,29 +586,6 @@ public class DeliverWobble extends LinearOpMode {
         shooterFlicker.setPosition(0);
     }
 
-    public void shooterOnly(float seconds,ElapsedTime time){
-        while(time.seconds()>seconds){
-            driveFrontRight.setPower(0);
-            driveFrontLeft.setPower(0);
-            driveBackLeft.setPower(0);
-            driveBackRight.setPower(0);
-        }
-
-    }
-    public void encoderShoot(int revs, double power){
-        final double WHEEL_DIAMETER = 9; //in cm
-        final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
-        //final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches);
-
-        while(Math.abs(shooterWheel.getCurrentPosition()) < Math.abs(revs)){
-            shooterWheel.setPower(power);
-            //telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
-            telemetry.addData("POSITION", shooterWheel.getCurrentPosition());
-            telemetry.update();
-        }
-        stopMotors();
-        return;
-    }
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
