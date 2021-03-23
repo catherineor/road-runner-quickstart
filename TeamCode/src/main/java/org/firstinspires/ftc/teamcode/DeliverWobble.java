@@ -116,7 +116,6 @@ public class DeliverWobble extends LinearOpMode {
         SHOOT2,
         SHOOT3,
         DELIVER,
-        TOLL2,
         INTAKE,
         PARK,
         STOP,
@@ -152,8 +151,8 @@ public class DeliverWobble extends LinearOpMode {
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
         wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
-        wobblePivotTop.setPosition(0);
-        wobblePivotBottom.setPosition(1);
+        wobblePivotTop.setPosition(.3);
+        wobblePivotBottom.setPosition(.97);
         wobbleClaw.setPosition(1);
 
         //ring detection
@@ -170,6 +169,8 @@ public class DeliverWobble extends LinearOpMode {
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = false;
+        //parameters.loggingTag          = "IMU";
+        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -211,8 +212,6 @@ public class DeliverWobble extends LinearOpMode {
         ElapsedTime autoTime = new ElapsedTime();
         while (opModeIsActive())
         {
-            telemetry.addData("# of rings", ringHeight);
-            telemetry.update();
             switch(state) {
                 case TOSCAN:
                     shooterWheel.setPower(-.4);
@@ -229,6 +228,7 @@ public class DeliverWobble extends LinearOpMode {
                             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                             if (updatedRecognitions != null) {
                                 telemetry.addData("# Object Detected", updatedRecognitions.size());
+                                //int i = 0;
                                 for (Recognition r : updatedRecognitions) {
                                     if(r.getLabel().equals("Quad"))
                                     {
@@ -245,13 +245,14 @@ public class DeliverWobble extends LinearOpMode {
                                     telemetry.addData("# of rings", ringHeight);
                                     telemetry.update();
                                 }
+                                
                             }
                         }
                     }
                     setStateRunning(State.TOLL);
                     break;
                 case TOLL:
-                    shooterWheel.setPower(-.4);
+                    shooterWheel.setPower(-.43);
                     shooterFlicker.setPosition(0);
                     resetEncoders();
                     useEncoders();
@@ -261,90 +262,80 @@ public class DeliverWobble extends LinearOpMode {
                     encoderForwards(37, .5);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(6, -.35);
+                    encoderCrab(8, -.35);
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
-                    shooterWheel.setPower(-.4);
+                    shooterWheel.setPower(-.43);
                     flicker();
                     setStateRunning(State.SHOOT2);
                     break;
                 case SHOOT2:
-                    shooterWheel.setPower(-.4);
                     turnDegrees(-1, .5);
+                    shooterWheel.setPower(-.43);
                     shooterFlicker.setPosition(0);
                     flicker();
                     setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
-                    shooterWheel.setPower(-.4);
-                    turnDegrees(-2, .5);
+                    turnDegrees(-1, .5);
                     shooterFlicker.setPosition(0);
+                    shooterWheel.setPower(-.43);
                     flicker();
                     setStateRunning(State.DELIVER);
                     break;
                 case DELIVER:
-                    shooterWheel.setPower(0);
                     if(ringHeight==0)
                     {
-                        turnDegrees(90,.5);
-                        resetEncoders();
-                        useEncoders();
-                        encoderForwards(22, .35);
-                        wobbleClaw.setPosition(1);
-                        wobblePivotTop.setPosition(1);
-                        wobblePivotBottom.setPosition(0);
-                        sleep(1000);
+                        setStateRunning(State.PARK);
                     }
                     else if(ringHeight==1)
                     {
-                        turnDegrees(5,.5);
                         resetEncoders();
                         useEncoders();
                         encoderCrab(5, -.35);
-                        resetEncoders();
-                        useEncoders();
-                        encoderForwards(15, .5);
-                        wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        sleep(1000);
+                        wobbleClaw.setPosition(1);
                     }
                     else if(ringHeight==4)
                     {
-                        turnDegrees(5,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(48, .5);
-                        turnDegrees(85,.35);
+                        encoderForwards(50, .5);
+                        turnDegrees(90,.5);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(21, .5);
+                        encoderForwards(18, .5);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
                         sleep(1000);
                     }
-                    setStateRunning(State.TOLL2);
+                    setStateRunning(State.PARK);
                     break;
-                case TOLL2:
+                case INTAKE:
+                    //intake.setPower(1);
+                    //index.setPower(-1);
+                    setStateRunning(State.PARK);
+                    break;
+                case PARK:
                     if(ringHeight==0)
                     {
-                        wobbleClaw.setPosition(0);
                         resetEncoders();
                         useEncoders();
-                        encoderBackwards(15, .5);
-                        turnDegrees(85,.35);
+                        encoderForwards(10, .35);
+                        turnDegrees(90,.25);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(15, .5);
+                        encoderForwards(27, .35);
+                       // wobblePivotTop.setPosition(1);
+                       // wobblePivotBottom.setPosition(0);
+                        wobbleClaw.setPosition(1);
                     }
                     else if(ringHeight==1)
                     {
-                        wobbleClaw.setPosition(0);
-                        resetEncoders();
-                        useEncoders();
-                        encoderBackwards(15, .5);
+                        
                     }
                     else if(ringHeight==4)
                     {
@@ -359,22 +350,8 @@ public class DeliverWobble extends LinearOpMode {
                     }
                     setStateRunning(State.STOP);
                     break;
-                case INTAKE:
-                    intake.setPower(1);
-                    index.setPower(-1);
-                    resetEncoders();
-                    useEncoders();
-                    encoderBackwards(15, .25);
-                    setStateRunning(State.PARK);
-                    break;
-                case PARK:
-                    intake.setPower(0);
-                    index.setPower(0);
-                    resetEncoders();
-                    useEncoders();
-                    encoderForwards(15, .5);
-                    break;
                 case STOP:
+                    shooterWheel.setPower(0);
                     stopMotors();
                     break;
             }
@@ -454,9 +431,9 @@ public class DeliverWobble extends LinearOpMode {
     public void drive(double power)
     {
         driveFrontRight.setPower(power);
-        driveFrontLeft.setPower(power);
+        driveFrontLeft.setPower(power*.95);
         driveBackRight.setPower(power);
-        driveBackLeft.setPower(power);
+        driveBackLeft.setPower(power*.95);
     }
 
     public void crab(double power)
@@ -474,13 +451,17 @@ public class DeliverWobble extends LinearOpMode {
         driveBackRight.setPower(power);
         driveBackLeft.setPower(-power);
     }
-
-    public void stopMotors()
+    
+    public void turnTime(double time, double power)
     {
-        driveFrontRight.setPower(0);
-        driveFrontLeft.setPower(0);
-        driveBackRight.setPower(0);
-        driveBackLeft.setPower(0);
+        runtime.reset();
+        while(runtime.seconds()<time)
+        {
+            driveFrontRight.setPower(power);
+            driveFrontLeft.setPower(-power);
+            driveBackRight.setPower(power);
+            driveBackLeft.setPower(-power);
+        }
     }
 
     private void resetAngle()
@@ -575,8 +556,13 @@ public class DeliverWobble extends LinearOpMode {
         resetAngle();
         return;
     }
-
-
+    public void stopMotors()
+    {
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
+    }
     public void flicker()
     {
         shooterFlicker.setPosition(1);
@@ -587,6 +573,29 @@ public class DeliverWobble extends LinearOpMode {
         shooterFlicker.setPosition(0);
     }
 
+    public void shooterOnly(float seconds,ElapsedTime time){
+        while(time.seconds()>seconds){
+            driveFrontRight.setPower(0);
+            driveFrontLeft.setPower(0);
+            driveBackLeft.setPower(0);
+            driveBackRight.setPower(0);
+        }
+
+    }
+    public void encoderShoot(int revs, double power){
+        final double WHEEL_DIAMETER = 9; //in cm
+        final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
+        //final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches);
+
+        while(Math.abs(shooterWheel.getCurrentPosition()) < Math.abs(revs)){
+            shooterWheel.setPower(power);
+            //telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
+            telemetry.addData("POSITION", shooterWheel.getCurrentPosition());
+            telemetry.update();
+        }
+        stopMotors();
+        return;
+    }
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
