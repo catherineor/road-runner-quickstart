@@ -89,6 +89,7 @@ public class DeliverWobble extends LinearOpMode {
     private DcMotor wobbleLead;
     private Servo wobblePivotTop;
     private Servo wobblePivotBottom;
+    private Servo wobbleThirdPivot;
     private Servo wobbleClaw;
 
     private double drive, strafe = 0;
@@ -150,9 +151,11 @@ public class DeliverWobble extends LinearOpMode {
         wobbleLead = hardwareMap.get(DcMotor.class, "wobbleLead");
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
+        wobbleThirdPivot = hardwareMap.get(Servo.class, "wobbleThirdPivot");
         wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
-        wobblePivotTop.setPosition(.3);
-        wobblePivotBottom.setPosition(.97);
+        wobblePivotTop.setPosition(.075);
+        wobblePivotBottom.setPosition(.925);
+        wobbleThirdPivot.setPosition(.075);
         wobbleClaw.setPosition(1);
 
         //ring detection
@@ -214,7 +217,7 @@ public class DeliverWobble extends LinearOpMode {
         {
             switch(state) {
                 case TOSCAN:
-                    shooterWheel.setPower(-.4);
+                    shooterWheel.setPower(-.43);
                     resetEncoders();
                     useEncoders();
                     encoderForwards(15, .5);
@@ -224,7 +227,7 @@ public class DeliverWobble extends LinearOpMode {
                     if (tfod != null) {
                         while(autoTime.seconds() < 3)
                         {
-                            shooterWheel.setPower(-.4);
+                            shooterWheel.setPower(-.43);
                             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                             if (updatedRecognitions != null) {
                                 telemetry.addData("# Object Detected", updatedRecognitions.size());
@@ -278,9 +281,9 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
+                    shooterWheel.setPower(-.43);
                     turnDegrees(-1, .5);
                     shooterFlicker.setPosition(0);
-                    shooterWheel.setPower(-.43);
                     flicker();
                     setStateRunning(State.DELIVER);
                     break;
@@ -291,25 +294,32 @@ public class DeliverWobble extends LinearOpMode {
                     }
                     else if(ringHeight==1)
                     {
+                        turnDegrees(8,.35);
                         resetEncoders();
                         useEncoders();
                         encoderCrab(5, -.35);
+                        resetEncoders();
+                        useEncoders();
+                        encoderForwards(25, .5);
+                        wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(1);
+                        wobbleThirdPivot.setPosition(1);
+                        sleep(1000);
                     }
                     else if(ringHeight==4)
                     {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(50, .5);
-                        turnDegrees(90,.5);
+                        turnDegrees(90,.35);
                         resetEncoders();
                         useEncoders();
                         encoderForwards(18, .5);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
+                        wobbleThirdPivot.setPosition(1);
                         sleep(1000);
                     }
                     setStateRunning(State.PARK);
@@ -317,6 +327,10 @@ public class DeliverWobble extends LinearOpMode {
                 case INTAKE:
                     //intake.setPower(1);
                     //index.setPower(-1);
+                    /*encoderCrab(8,.35);
+                    resetEncoders();
+                    useEncoders();
+                    encoderForwards(10,.25)*/
                     setStateRunning(State.PARK);
                     break;
                 case PARK:
@@ -325,21 +339,24 @@ public class DeliverWobble extends LinearOpMode {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(10, .35);
-                        turnDegrees(90,.25);
+                        turnDegrees(90,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(27, .35);
+                        encoderForwards(25, .35);
                        // wobblePivotTop.setPosition(1);
                        // wobblePivotBottom.setPosition(0);
                         wobbleClaw.setPosition(1);
                     }
                     else if(ringHeight==1)
                     {
-                        
+                        wobbleClaw.setPosition(.75);
+                        resetEncoders();
+                        useEncoders();
+                        encoderBackwards(10, .5);
                     }
                     else if(ringHeight==4)
                     {
-                        wobbleClaw.setPosition(0);
+                        wobbleClaw.setPosition(.2);
                         resetEncoders();
                         useEncoders();
                         encoderBackwards(15, .5);
@@ -353,6 +370,8 @@ public class DeliverWobble extends LinearOpMode {
                 case STOP:
                     shooterWheel.setPower(0);
                     stopMotors();
+                    telemetry.addData("time:", autoTime.seconds());
+                    telemetry.update();
                     break;
             }
         }
