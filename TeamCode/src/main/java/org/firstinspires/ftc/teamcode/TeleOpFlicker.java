@@ -29,7 +29,7 @@ public class TeleOpFlicker extends OpMode
     private DcMotor index;
     private Servo indexRight;
     private Servo indexLeft;
-    private boolean doorOpen = true;
+    boolean doorOpen = true;
 
     //intake
     private DcMotor intake;
@@ -38,22 +38,17 @@ public class TeleOpFlicker extends OpMode
     private DcMotor wobbleLead;
     private Servo wobblePivotTop;
     private Servo wobblePivotBottom;
+    private Servo wobbleThirdPivot;
     private Servo wobbleClaw;
-    private boolean clawOpen = false;
-    private boolean inBot=true;
+    boolean clawOpen = false;
+    boolean inBot=true;
 
     //Drivetrain
     private DcMotor driveFrontRight;
     private DcMotor driveFrontLeft;
     private DcMotor driveBackRight;
     private DcMotor driveBackLeft;
-    private boolean halfPower = false;
-
-    // variables and timer to combine tasks into one button push
-    private boolean pressed = false;
-    private boolean done = false;
-    private boolean delivered = true;
-    ElapsedTime timer = new ElapsedTime();
+    boolean halfPower = false;
 
     @Override
     public void init() {
@@ -78,9 +73,11 @@ public class TeleOpFlicker extends OpMode
         wobbleLead = hardwareMap.get(DcMotor.class, "wobbleLead");
         wobblePivotTop = hardwareMap.get(Servo.class, "wobblePivotTop");
         wobblePivotBottom = hardwareMap.get(Servo.class, "wobblePivotBottom");
+        wobbleThirdPivot = hardwareMap.get(Servo.class, "wobbleThirdPivot");
         wobbleClaw = hardwareMap.get(Servo.class, "wobbleClaw");
         wobblePivotTop.setPosition(0);
         wobblePivotBottom.setPosition(1);
+        wobbleThirdPivot.setPosition(0);
         wobbleClaw.setPosition(1);
         
 
@@ -107,28 +104,16 @@ public class TeleOpFlicker extends OpMode
         intake.setPower(0);
         index.setPower(0);
 
-        //index trap doors
-        if(gamepad2.b && doorOpen)
-        {
-            indexRight.setPosition(.75);
-            indexLeft.setPosition(.34);
-            doorOpen=!doorOpen;
-        }
-        else if(gamepad2.b && !doorOpen)
-        {
-            indexRight.setPosition(1);
-            indexLeft.setPosition(0);
-            doorOpen=!doorOpen;
-        }
-
         //shooter
         if(gamepad2.left_trigger>0)
         {
             shooterWheel.setPower(-.48);
         }
-        else if(gamepad2.right_trigger>0)
+        shooterWheel.setPower(0);
+        
+        if(gamepad2.right_trigger>0)
         {
-            shooterWheel.setPower(-.25);
+            shooterWheel.setPower(-.46);
         }
         shooterWheel.setPower(0);
         
@@ -183,7 +168,7 @@ public class TeleOpFlicker extends OpMode
             wobbleClaw.setPosition(1);
             clawOpen=!clawOpen;
         }
-        if(gamepad2.x && !clawOpen)
+        else if(gamepad2.x && !clawOpen)
         {
             wobbleClaw.setPosition(.7);
             clawOpen=!clawOpen;
@@ -193,57 +178,28 @@ public class TeleOpFlicker extends OpMode
         {
             wobblePivotTop.setPosition(1);
             wobblePivotBottom.setPosition(0);
+            wobbleThirdPivot.setPosition(1);
             inBot=!inBot;
         }
         else if (gamepad2.y && !inBot)
         {
             wobblePivotTop.setPosition(0);
             wobblePivotBottom.setPosition(1);
+            wobbleThirdPivot.setPosition(0);
             inBot=!inBot;
         }
-        //1 button wobble
-        /*if (gamepad2.x && pressed == false) {
-            done = false;
-            if (!pressed) {
-                timer.reset();
-                pressed = true;
-            }
+        
+        if(gamepad2.b && doorOpen)
+        {
+            indexRight.setPosition(.5);
+            indexLeft.setPosition(.5);
+            doorOpen=!doorOpen;
         }
-        else if (pressed == true && done == false && delivered == true) {
-            if (timer.seconds() > 0 && timer.seconds() < 2) {
-                wobbleClaw.setPosition(1);
-                wobblePivotTop.setPosition(1);
-                wobblePivotBottom.setPosition(0);
-                inBot=!inBot;
-            }
-            if (timer.seconds() > 2) {
-                wobbleClaw.setPosition(1);
-                wobblePivotTop.setPosition(0);
-                wobblePivotBottom.setPosition(1);
-                inBot=!inBot;
-                done = true;
-            }
+        else if(gamepad2.b && !doorOpen)
+        {
+            indexRight.setPosition(1);
+            indexLeft.setPosition(0);
+            doorOpen=!doorOpen;
         }
-        else if (pressed == true && done == false && delivered == false) {
-            if (timer.seconds() > 0 && timer.seconds() < 1) {
-                wobbleLead.setPower(.5);
-            }
-            if (timer.seconds() > 1 && timer.seconds() < 3){
-                wobbleClaw.setPosition(1);
-                wobblePivotTop.setPosition(1);
-                wobblePivotBottom.setPosition(0);
-                inBot=!inBot;
-            }
-            if (timer.seconds() > 3) {
-                wobbleClaw.setPosition(1);
-                wobblePivotTop.setPosition(0);
-                wobblePivotBottom.setPosition(1);
-                inBot=!inBot;
-                done = true;
-            }
-        }
-        else if (!gamepad2.x && done == true) {
-            pressed = false;
-        }*/
     }
 }
