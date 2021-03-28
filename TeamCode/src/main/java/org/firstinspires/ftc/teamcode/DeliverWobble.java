@@ -104,7 +104,7 @@ public class DeliverWobble extends LinearOpMode {
             "AfDxTOz/////AAABmZP0ZciU3EdTii04SAkq0dI8nEBh4mM/bXMf3H6bRJJbH/XCSdLIe5SDSavwPb0wJvUdnsmXcal43ZW2YJRG6j65bfewYJPCb+jGn7IW7kd5rKWs11G7CtFSMGEOhA5NU8gi39eHW0pmXC8NEXBn3CmK67TIENGm/YBN6f+xmkmDvBQjaJc2hJ93HPvhAnIiAbJT9/fWijwg9IovTok/xAcAcuIKz3XK/lnJXu6XdJ1MyRtoXO7yf1W4ReDHngWCtKI9B7bAnD6zPNhZoVLVzl34E8XKed/dGShIoCmIUTe0HoUniP0ye3AnwhFgxLhgPcysF8uVqKN0VKBpDH1zU7J7keZdjWHM6jvn29oLMK7W";
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
-    
+
     BNO055IMU               imu;
     Orientation             lastAngles = new Orientation();
     double                  globalAngle, correction;
@@ -165,7 +165,7 @@ public class DeliverWobble extends LinearOpMode {
             tfod.activate();
             tfod.setZoom(1.0, 16.0/9.0);
         }
-        
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode                = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -178,21 +178,21 @@ public class DeliverWobble extends LinearOpMode {
         // Retrieve and initialize the IMU. 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        
+
         resetEncoders();
         useEncoders();
         resetAngle();
-        
+
         if (tfod != null) {
             tfod.activate();
         }
-        
-         while (!isStopRequested() && !imu.isGyroCalibrated())
+
+        while (!isStopRequested() && !imu.isGyroCalibrated())
         {
             sleep(50);
             idle();
         }
-        
+
         telemetry.addData("pos", driveFrontLeft.getCurrentPosition());
         telemetry.addData("angle:", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         telemetry.update();
@@ -224,6 +224,7 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.SCAN);
                     break;
                 case SCAN:
+                    shooterWheel.setPower(-.43);
                     if (tfod != null) {
                         while(autoTime.seconds() < 3)
                         {
@@ -248,24 +249,25 @@ public class DeliverWobble extends LinearOpMode {
                                     telemetry.addData("# of rings", ringHeight);
                                     telemetry.update();
                                 }
-                                
+
                             }
                         }
                     }
                     setStateRunning(State.TOLL);
                     break;
                 case TOLL:
-                    shooterWheel.setPower(-.43);
+                    shooterWheel.setPower(-.45);
                     shooterFlicker.setPosition(0);
                     resetEncoders();
                     useEncoders();
                     encoderCrab(10, .35);
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(37, .5);
+                    encoderForwards(41, .5);
+                    turnDegrees(1,.5);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(8, -.35);
+                    encoderCrab(13, -.35);
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
@@ -274,16 +276,14 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.SHOOT2);
                     break;
                 case SHOOT2:
-                    turnDegrees(-1, .5);
                     shooterWheel.setPower(-.43);
-                    shooterFlicker.setPosition(0);
+                    turnDegrees(-1, .3);
                     flicker();
                     setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
-                    shooterWheel.setPower(-.43);
-                    turnDegrees(-1, .5);
-                    shooterFlicker.setPosition(0);
+                    shooterWheel.setPower(-.4);
+                    turnDegrees(-1, .25);
                     flicker();
                     setStateRunning(State.DELIVER);
                     break;
@@ -294,7 +294,7 @@ public class DeliverWobble extends LinearOpMode {
                     }
                     else if(ringHeight==1)
                     {
-                        turnDegrees(8,.35);
+                        turnDegrees(11,.35);
                         resetEncoders();
                         useEncoders();
                         encoderCrab(5, -.35);
@@ -305,17 +305,17 @@ public class DeliverWobble extends LinearOpMode {
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
                         wobbleThirdPivot.setPosition(1);
-                        sleep(1000);
+                        sleep(1500);
                     }
                     else if(ringHeight==4)
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(50, .5);
-                        turnDegrees(90,.35);
+                        encoderForwards(51, .5);
+                        turnDegrees(93,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(18, .5);
+                        encoderForwards(26, .5);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
@@ -338,13 +338,13 @@ public class DeliverWobble extends LinearOpMode {
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(10, .35);
-                        turnDegrees(90,.35);
+                        encoderForwards(13, .35);
+                        turnDegrees(98,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(25, .35);
-                       // wobblePivotTop.setPosition(1);
-                       // wobblePivotBottom.setPosition(0);
+                        encoderForwards(30, .35);
+                        // wobblePivotTop.setPosition(1);
+                        // wobblePivotBottom.setPosition(0);
                         wobbleClaw.setPosition(1);
                     }
                     else if(ringHeight==1)
@@ -356,11 +356,11 @@ public class DeliverWobble extends LinearOpMode {
                     }
                     else if(ringHeight==4)
                     {
-                        wobbleClaw.setPosition(.2);
+                        wobbleClaw.setPosition(.75);
                         resetEncoders();
                         useEncoders();
                         encoderBackwards(15, .5);
-                        turnDegrees(85,.35);
+                        turnDegrees(92,.35);
                         resetEncoders();
                         useEncoders();
                         encoderForwards(35, .5);
@@ -470,7 +470,7 @@ public class DeliverWobble extends LinearOpMode {
         driveBackRight.setPower(power);
         driveBackLeft.setPower(-power);
     }
-    
+
     public void turnTime(double time, double power)
     {
         runtime.reset();
@@ -512,7 +512,7 @@ public class DeliverWobble extends LinearOpMode {
         return globalAngle;
     }
 
-    
+
     /**
      * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
      * @param degrees Degrees to turn, + is left - is right
@@ -584,12 +584,14 @@ public class DeliverWobble extends LinearOpMode {
     }
     public void flicker()
     {
-        shooterFlicker.setPosition(1);
+        shooterFlicker.setPosition(.8);
         runtime.reset();
         while (runtime.seconds()<0.8)
         {
         }
+        //runtime.reset();
         shooterFlicker.setPosition(0);
+        //while (runtime.seconds()<0.8)
     }
 
     public void shooterOnly(float seconds,ElapsedTime time){
