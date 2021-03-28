@@ -1,3 +1,5 @@
+// Marlbots-2020-2021-Auto
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -175,7 +177,7 @@ public class DeliverWobble extends LinearOpMode {
         //parameters.loggingTag          = "IMU";
         //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        // Retrieve and initialize the IMU. 
+        // Retrieve and initialize the IMU.
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
