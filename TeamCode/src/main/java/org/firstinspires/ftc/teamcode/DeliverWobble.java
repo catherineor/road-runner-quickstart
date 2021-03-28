@@ -530,12 +530,12 @@ public class DeliverWobble extends LinearOpMode {
         // clockwise (right).
 
         if (degrees > 0)
-        {   // turn right.
+        {   // turn left.
             leftPower = power;
             rightPower = -power;
         }
         else if (degrees < 0)
-        {   // turn left.
+        {   // turn right.
             leftPower = -power;
             rightPower = power;
         }
