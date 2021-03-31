@@ -264,7 +264,7 @@ public class HighGoalAuto extends LinearOpMode {
                     shooterFlicker.setPosition(0);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(-10, .35);
+                    encoderCrab(10, -.35);
                     resetEncoders();
                     useEncoders();
                     encoderForwards(41, .5);
