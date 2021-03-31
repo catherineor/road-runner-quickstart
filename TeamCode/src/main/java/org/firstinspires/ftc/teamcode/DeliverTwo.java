@@ -77,7 +77,6 @@ public class DeliverTwo extends LinearOpMode {
     private DcMotor shooterWheel;
     private Servo shooterFlicker;
     boolean changeFlicker = true;
-    private float flickerPos = 0;
 
     //indexing
     private DcMotor index;
@@ -146,7 +145,7 @@ public class DeliverTwo extends LinearOpMode {
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
-        shooterFlicker.setPosition(flickerPos);
+        shooterFlicker.setPosition(0);
 
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -236,7 +235,6 @@ public class DeliverTwo extends LinearOpMode {
                             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                             if (updatedRecognitions != null) {
                                 telemetry.addData("# Object Detected", updatedRecognitions.size());
-                                //int i = 0;
                                 for (Recognition r : updatedRecognitions) {
                                     if(r.getLabel().equals("Quad"))
                                     {
@@ -260,7 +258,6 @@ public class DeliverTwo extends LinearOpMode {
                     break;
                 case TOLL:
                     shooterWheel.setPower(-.45);
-                    shooterFlicker.setPosition(0);
                     resetEncoders();
                     useEncoders();
                     encoderCrab(10, .35);
@@ -704,9 +701,7 @@ public class DeliverTwo extends LinearOpMode {
         while (runtime.seconds()<0.8)
         {
         }
-        //runtime.reset();
         shooterFlicker.setPosition(0);
-        //while (runtime.seconds()<0.8)
     }
 
     public void shooterOnly(float seconds,ElapsedTime time){
