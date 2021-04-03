@@ -320,6 +320,7 @@ public class HighGoalAuto extends LinearOpMode {
                         wobblePivotBottom.setPosition(0);
                         wobbleThirdPivot.setPosition(1);
                         sleep(1500);
+                        setStateRunning(State.PARK);
                     }
                     else if(ringHeight==4)
                     {
@@ -336,9 +337,7 @@ public class HighGoalAuto extends LinearOpMode {
                         sleep(1500);
                         wobbleClaw.setPosition(.75);
                         setStateRunning(State.INTAKE);
-                        break;
                     }
-                    setStateRunning(State.PARK);
                     break;
                 case INTAKE:
                     if(ringHeight==4){
@@ -360,12 +359,11 @@ public class HighGoalAuto extends LinearOpMode {
                         encoderBackwards(68, .5);
                         intake.setPower(0);
                         setStateRunning(State.TOSHOOT2);
-                        break;
                     }
                     else{
                         setStateRunning(State.SECONDWOBBLE);
-                        break;
                     }
+                    break;
                 case TOSHOOT2:
                     index.setPower(-1);
                     intake.setPower(-1);
@@ -413,6 +411,7 @@ public class HighGoalAuto extends LinearOpMode {
                 case POWERSHOTS:
                     resetEncoders();
                     useEncoders();
+                    break;
                 case SECONDWOBBLE:
                     if(ringHeight==0){
 
@@ -420,6 +419,7 @@ public class HighGoalAuto extends LinearOpMode {
                     else{ //ringHeight==1
 
                     }
+                    break;
                 case PARK:
                     if(ringHeight==0)
                     {
