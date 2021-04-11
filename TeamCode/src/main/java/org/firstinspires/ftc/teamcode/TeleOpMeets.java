@@ -294,5 +294,34 @@ public class TeleOpMeets extends OpMode
             wobbleThirdPivot.setPosition(0);
             inBot=!inBot;
         }*/
+
+        //post spring break adjustments
+        /*
+        //dpad claw (remove other one)
+        if (gamepad2.dpad_left)
+        {
+            wobbleClaw.setPosition(.75);
+        }
+        else if(gamepad2.dpad_right)
+        {
+            wobbleClaw.setPosition(1);
+        }
+
+        //dpad lead screw
+        if(gamepad2.dpad_up)
+        {
+            wobbleLead.setPower(1);
+        }
+        else if(gamepad2.dpad_down)
+        {
+            wobbleLead.setPower(-1);
+        }
+        else
+            wobbleLead.setPower(0);
+
+        //right_stick.y>0 - add wobbleClaw.setPosition(1);
+
+        //2.y - automate power shots
+         */
     }
 }

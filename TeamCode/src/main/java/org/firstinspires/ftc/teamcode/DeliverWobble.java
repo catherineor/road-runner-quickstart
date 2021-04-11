@@ -284,7 +284,7 @@ public class DeliverWobble extends LinearOpMode {
                     setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
-                    shooterWheel.setPower(-.4);
+                    shooterWheel.setPower(-.35);
                     turnDegrees(-1, .25);
                     flicker();
                     setStateRunning(State.DELIVER);

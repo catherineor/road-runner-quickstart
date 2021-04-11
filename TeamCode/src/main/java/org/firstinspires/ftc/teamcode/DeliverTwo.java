@@ -285,7 +285,12 @@ public class DeliverTwo extends LinearOpMode {
                     shooterWheel.setPower(-.4);
                     turnDegrees(1, .35);
                     flicker();
-                    setStateRunning(State.DELIVER1);
+                    if (ringHeight == 4)
+                    {
+                        setStateRunning(State.INTAKE);
+                    }
+                    else
+                        setStateRunning(State.DELIVER1);
                     break;
                 case DELIVER1:
                     turnDegrees(-3,.35);
@@ -307,6 +312,7 @@ public class DeliverTwo extends LinearOpMode {
                         wobbleThirdPivot.setPosition(1);
                         sleep(1500);
                         wobbleClaw.setPosition(.75);
+                        setStateRunning(State.TOW2);
                     }
                     else if(ringHeight==4)
                     {
@@ -323,8 +329,8 @@ public class DeliverTwo extends LinearOpMode {
                         wobbleThirdPivot.setPosition(1);
                         sleep(1500);
                         wobbleClaw.setPosition(.75);
+                        setStateRunning(State.PARK);
                     }
-                    setStateRunning(State.PARK);
                     break;
                 case TOW2:
                     turnDegrees(90,.35);
@@ -388,13 +394,26 @@ public class DeliverTwo extends LinearOpMode {
                     setStateRunning(State.PARK);
                     break;
                 case INTAKE:
-                    intake.setPower(1);
-                    index.setPower(-1);
-                    encoderCrab(8,.35);
-                    resetEncoders();
-                    useEncoders();
-                    encoderForwards(10,.25);
-                    setStateRunning(State.PARK);
+                    if(ringHeight == 4)
+                    {
+                        //get intake down
+                        resetEncoders();
+                        useEncoders();
+                        encoderBackwards(8, .56);
+                        resetEncoders();
+                        useEncoders();
+                        encoderForwards(7, .5);
+                        intake.setPower(1);
+                        index.setPower(-1);
+                        resetEncoders();
+                        useEncoders();
+                        encoderCrab(8,-.35);
+                        resetEncoders();
+                        useEncoders();
+                        encoderForwards(10,.25);
+                        setStateRunning(State.DELIVER1);
+                    }
+                    //setStateRunning(State.PARK);
                     break;
                 case PARK:
                     if(ringHeight==0)
