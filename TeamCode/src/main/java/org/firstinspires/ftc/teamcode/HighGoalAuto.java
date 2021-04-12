@@ -1,5 +1,3 @@
-// Marlbots-2020-2021-Auto
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -275,7 +273,7 @@ public class HighGoalAuto extends LinearOpMode {
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
-                    shooterWheel.setPower(-.485);
+                    shooterWheel.setPower(-.48);
                     flicker();
                     runtime.reset();
                     while (runtime.seconds()<0.8)
@@ -293,7 +291,7 @@ public class HighGoalAuto extends LinearOpMode {
                     setStateRunning(State.SHOOT3);
                     break;
                 case SHOOT3:
-                    shooterWheel.setPower(-.41);
+                    shooterWheel.setPower(-.48);
                     flicker();
                     runtime.reset();
                     while (runtime.seconds()<0.8)
@@ -308,13 +306,13 @@ public class HighGoalAuto extends LinearOpMode {
                     }
                     else if(ringHeight==1)
                     {
-                        turnDegrees(11,.35);
+                        turnDegrees(-15,.35);
                         resetEncoders();
                         useEncoders();
                         encoderCrab(5, -.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(25, .5);
+                        encoderForwards(20, .5);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
@@ -347,7 +345,7 @@ public class HighGoalAuto extends LinearOpMode {
                         //get intake down
                         resetEncoders();
                         useEncoders();
-                        encoderBackwards(8, .56);
+                        encoderBackwards(10, .56);
                         resetEncoders();
                         useEncoders();
                         encoderForwards(7, .5);
@@ -356,7 +354,7 @@ public class HighGoalAuto extends LinearOpMode {
                         //drive to intake
                         intake.setPower(1);
                         index.setPower(-1);
-                        encoderBackwards(68, .5);
+                        encoderBackwards(60, .5);
                         intake.setPower(0);
                         setStateRunning(State.TOSHOOT2);
                     }
@@ -373,22 +371,24 @@ public class HighGoalAuto extends LinearOpMode {
                     wobbleThirdPivot.setPosition(.075);
                     resetEncoders();
                     useEncoders();
-                    index.setPower(0);
-                    encoderForwards(34, 0.5);
+                    encoderForwards(30, 0.8);
                     intake.setPower(0);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(13, -0.35);
+                    encoderCrab(11, -0.35);
+                    //turnDegrees(-5,0.35);
+                    index.setPower(0);
                     setStateRunning(State.SHOOT4);
                     break;
                 case SHOOT4:
-                    shooterWheel.setPower(-.485);
+                    shooterWheel.setPower(-.47);
                     flicker();
                     runtime.reset();
                     while (runtime.seconds()<0.8)
                     {
                     }
-                    setStateRunning(State.SHOOT5);
+                    setStateRunning(State.PARK);
+                    //setStateRunning(State.SHOOT5);
                     break;
                 case SHOOT5:
                     shooterWheel.setPower(-.41);
@@ -400,7 +400,7 @@ public class HighGoalAuto extends LinearOpMode {
                     setStateRunning(State.SHOOT6);
                     break;
                 case SHOOT6:
-                    shooterWheel.setPower(-.41);
+                    shooterWheel.setPower(-.48);
                     flicker();
                     runtime.reset();
                     while (runtime.seconds()<0.8)
@@ -429,7 +429,7 @@ public class HighGoalAuto extends LinearOpMode {
                         turnDegrees(98,.35);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(30, .35);
+                        encoderForwards(10, .35);
                         // wobblePivotTop.setPosition(1);
                         // wobblePivotBottom.setPosition(0);
                         wobbleClaw.setPosition(1);
@@ -439,13 +439,13 @@ public class HighGoalAuto extends LinearOpMode {
                         wobbleClaw.setPosition(.75);
                         resetEncoders();
                         useEncoders();
-                        encoderBackwards(10, .5);
+                        encoderBackwards(12, .5);
                     }
                     else if(ringHeight==4)
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(4, 0.5);
+                        encoderForwards(3, 0.5);
                     }
                     setStateRunning(State.STOP);
                     break;
@@ -666,7 +666,7 @@ public class HighGoalAuto extends LinearOpMode {
     }
     public void flicker()
     {
-        shooterFlicker.setPosition(.8);
+        shooterFlicker.setPosition(.75);
         runtime.reset();
         while (runtime.seconds()<0.6)
         {
