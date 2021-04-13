@@ -165,11 +165,11 @@ public class TeleOpMeets extends OpMode
             pressed3 = false;
             shooterWheel.setPower(0);
         }
-
+        
         if(gamepad2.b && doorOpen)
         {
-            indexRight.setPosition(.5);
-            indexLeft.setPosition(.5);
+            indexRight.setPosition(.6);
+            indexLeft.setPosition(.4);
             doorOpen=!doorOpen;
         }
         else if(gamepad2.b && !doorOpen)
