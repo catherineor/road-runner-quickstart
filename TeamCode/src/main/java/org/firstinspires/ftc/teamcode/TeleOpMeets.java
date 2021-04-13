@@ -41,8 +41,6 @@ public class TeleOpMeets extends OpMode
     private Servo wobblePivotBottom;
     private Servo wobbleThirdPivot;
     private Servo wobbleClaw;
-    boolean clawOpen = false;
-    boolean inBot=true;
     //combined buttons
     private boolean pressed1 = false;
     private boolean done1 = false;
@@ -126,8 +124,8 @@ public class TeleOpMeets extends OpMode
             intake.setPower(0);
             index.setPower(0);
         }
-        //power shots
-        if (gamepad2.dpad_up && pressed3 == false) //drop over wall
+        //automate power shots
+        if (gamepad2.y && pressed3 == false)
         {
             done3 = false;
             if (!pressed3)
@@ -162,7 +160,7 @@ public class TeleOpMeets extends OpMode
                 done3 = true;
             }
         }
-        else if (!(gamepad2.dpad_up) && done3 == true)
+        else if (!(gamepad2.y) && done3 == true)
         {
             pressed3 = false;
             shooterWheel.setPower(0);
@@ -233,8 +231,10 @@ public class TeleOpMeets extends OpMode
         }
 
         //wobble goal
+
         //claw and pivot
-        if (gamepad2.left_stick_y>0 && pressed1 == false) //drop over wall
+        //drop over wall
+        if (gamepad2.left_stick_y>0 && pressed1 == false)
         {
             done1 = false;
             if (!pressed1)
@@ -265,8 +265,8 @@ public class TeleOpMeets extends OpMode
         {
             pressed1 = false;
         }
-
-        if(gamepad2.left_stick_y<0 && pressed2 == false) //grab wobble
+        //grab wobble, pivot into robot
+        if(gamepad2.left_stick_y<0 && pressed2 == false)
         {
             done2 = false;
             if(!pressed2)
@@ -294,17 +294,17 @@ public class TeleOpMeets extends OpMode
             pressed2 = false;
         }
 
-        /* lead screw
-        if(gamepad2.left_stick_y>0)
+        //lead screw
+        if(gamepad2.dpad_up)
         {
             wobbleLead.setPower(1);
         }
-        else if(gamepad2.left_stick_y<0)
+        else if(gamepad2.dpad_down)
         {
             wobbleLead.setPower(-1);
         }
         else
-            wobbleLead.setPower(0);*/
+            wobbleLead.setPower(0);
 
         //just pivot
         if(gamepad2.right_stick_y>.1)
@@ -316,41 +316,20 @@ public class TeleOpMeets extends OpMode
         }
         else if (gamepad2.right_stick_y<-.1)
         {
+            wobbleClaw.setPosition(1);
             wobblePivotTop.setPosition(0);
             wobblePivotBottom.setPosition(1);
             wobbleThirdPivot.setPosition(0);
         }
-        //pivot over wall
-        if(gamepad2.y)
-        {
-            wobblePivotTop.setPosition(0.6);
-            wobblePivotBottom.setPosition(0.4);
-            wobbleThirdPivot.setPosition(0.6);
-        }
         //just claw
-        if (gamepad2.x && wobbleClaw.getPosition()>0.5 && wobbleClaw.getPosition()<.8)
+        if (gamepad2.dpad_right && wobbleClaw.getPosition()>0.5 && wobbleClaw.getPosition()<.8)
         {
             wobbleClaw.setPosition(1);
         }
-        else if(gamepad2.x && wobbleClaw.getPosition()>0.8 && wobbleClaw.getPosition()<=1)
+        else if(gamepad2.dpad_left && wobbleClaw.getPosition()>0.8 && wobbleClaw.getPosition()<=1)
         {
             wobbleClaw.setPosition(.75);
         }
-
-        /*if (gamepad2.y && inBot)
-        {
-            wobblePivotTop.setPosition(1);
-            wobblePivotBottom.setPosition(0);
-            wobbleThirdPivot.setPosition(1);
-            inBot=!inBot;
-        }
-        else if (gamepad2.y && !inBot)
-        {
-            wobblePivotTop.setPosition(0);
-            wobblePivotBottom.setPosition(1);
-            wobbleThirdPivot.setPosition(0);
-            inBot=!inBot;
-        }*/
     }
     public void flicker()
     {
