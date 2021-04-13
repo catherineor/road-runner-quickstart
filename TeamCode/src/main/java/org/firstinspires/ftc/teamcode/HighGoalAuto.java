@@ -266,10 +266,10 @@ public class HighGoalAuto extends LinearOpMode {
                     shooterFlicker.setPosition(0);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(15, -.35);
+                    encoderCrab(15, -.5);
                     resetEncoders();
                     useEncoders();
-                    encoderForwards(41, .5);
+                    encoderForwards(41, .65);
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
@@ -306,13 +306,13 @@ public class HighGoalAuto extends LinearOpMode {
                     }
                     else if(ringHeight==1)
                     {
-                        turnDegrees(-15,.35);
+                        turnDegrees(-15,.45);
                         resetEncoders();
                         useEncoders();
-                        encoderCrab(5, -.35);
+                        encoderCrab(5, -.5);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(20, .5);
+                        encoderForwards(20, .65);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
@@ -324,10 +324,10 @@ public class HighGoalAuto extends LinearOpMode {
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderCrab(11, -.4);
+                        encoderCrab(11, -.5);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(35, .5);
+                        encoderForwards(35, .65);
                         wobbleClaw.setPosition(1);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
@@ -341,21 +341,23 @@ public class HighGoalAuto extends LinearOpMode {
                     if(ringHeight==4){
                         resetEncoders();
                         useEncoders();
-                        encoderCrab(20, .4);
+                        encoderCrab(20, .5);
                         //get intake down
                         resetEncoders();
                         useEncoders();
-                        encoderBackwards(10, .56);
+                        encoderBackwards(10, .65);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(7, .5);
+                        encoderForwards(7, .65);
                         resetEncoders();
                         useEncoders();
                         //drive to intake
                         intake.setPower(1);
                         index.setPower(-1);
-                        encoderBackwards(60, .5);
+                        encoderBackwards(60, .65);
                         intake.setPower(0);
+                        telemetry.addData("time", autoTime.seconds());
+                        telemetry.update();
                         setStateRunning(State.TOSHOOT2);
                     }
                     else{
@@ -363,9 +365,11 @@ public class HighGoalAuto extends LinearOpMode {
                     }
                     break;
                 case TOSHOOT2:
+                    shooterWheel.setPower(-.47);
                     index.setPower(-1);
                     intake.setPower(-1);
                     shooterWheel.setPower(-.485);
+                    //wobbleClaw.setPosition(1);
                     wobblePivotTop.setPosition(.075);
                     wobblePivotBottom.setPosition(.925);
                     wobbleThirdPivot.setPosition(.075);
@@ -375,9 +379,11 @@ public class HighGoalAuto extends LinearOpMode {
                     intake.setPower(0);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(11, -0.35);
+                    encoderCrab(11, -0.5);
                     //turnDegrees(-5,0.35);
                     index.setPower(0);
+                    telemetry.addData("time", autoTime.seconds());
+                    telemetry.update();
                     setStateRunning(State.SHOOT4);
                     break;
                 case SHOOT4:
@@ -387,6 +393,8 @@ public class HighGoalAuto extends LinearOpMode {
                     while (runtime.seconds()<0.8)
                     {
                     }
+                    telemetry.addData("time", autoTime.seconds());
+                    telemetry.update();
                     setStateRunning(State.PARK);
                     //setStateRunning(State.SHOOT5);
                     break;
@@ -425,11 +433,11 @@ public class HighGoalAuto extends LinearOpMode {
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(13, .35);
-                        turnDegrees(98,.35);
+                        encoderForwards(13, .65);
+                        turnDegrees(98,.4);
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(10, .35);
+                        encoderForwards(10, .65);
                         // wobblePivotTop.setPosition(1);
                         // wobblePivotBottom.setPosition(0);
                         wobbleClaw.setPosition(1);
@@ -439,13 +447,13 @@ public class HighGoalAuto extends LinearOpMode {
                         wobbleClaw.setPosition(.75);
                         resetEncoders();
                         useEncoders();
-                        encoderBackwards(12, .5);
+                        encoderBackwards(12, .65);
                     }
                     else if(ringHeight==4)
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(3, 0.5);
+                        encoderForwards(3, 0.65);
                     }
                     setStateRunning(State.STOP);
                     break;
