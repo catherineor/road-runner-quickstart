@@ -199,7 +199,7 @@ public class TeleOpMeets extends OpMode
 
         if(gamepad2.a)
         {
-            shooterFlicker.setPosition(1);
+            shooterFlicker.setPosition(.75);
         }
         else
         {
