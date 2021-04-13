@@ -3,6 +3,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -15,7 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @TeleOp(name="TeleOpMeets", group="Iterative Opmode")
 
@@ -47,6 +48,8 @@ public class TeleOpMeets extends OpMode
     private boolean done1 = false;
     private boolean pressed2 = false;
     private boolean done2 = false;
+    private boolean pressed3 = false;
+    private boolean done3 = false;
     ElapsedTime timer = new ElapsedTime();
 
     //Drivetrain
@@ -55,6 +58,12 @@ public class TeleOpMeets extends OpMode
     private DcMotor driveBackRight;
     private DcMotor driveBackLeft;
     boolean halfPower = false;
+    
+    BNO055IMU               imu;
+    Orientation             lastAngles = new Orientation();
+    double                  globalAngle, correction;
+
+    ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void init() {
@@ -116,6 +125,47 @@ public class TeleOpMeets extends OpMode
         {
             intake.setPower(0);
             index.setPower(0);
+        }
+        //power shots
+        if (gamepad2.dpad_up && pressed3 == false) //drop over wall
+        {
+            done3 = false;
+            if (!pressed3)
+            {
+                timer.reset();
+                pressed3 = true;
+            }
+        }
+        else if (pressed3 == true && done3 == false) {
+            shooterWheel.setPower(-.45);
+            if (timer.seconds() > 0 && timer.seconds() < .4)
+            {
+                flicker();
+            }
+            if (timer.seconds() > .4 && timer.seconds() < .75)
+            {
+                turnTime(.35, .35);
+            }
+            if (timer.seconds() > .75 && timer.seconds() < 1.25)
+            {}
+            if (timer.seconds() > 1.25 && timer.seconds() < 1.65) {
+                flicker();
+            }
+            if (timer.seconds() > 1.65 && timer.seconds() < 2.15)
+            {
+                turnTime(.6, -.35);
+            }
+            if (timer.seconds() > 2.15 && timer.seconds() < 2.65)
+            {}
+            if (timer.seconds() > 2.65 && timer.seconds() < 3.1) {
+                flicker();
+                done3 = true;
+            }
+        }
+        else if (!(gamepad2.dpad_up) && done3 == true)
+        {
+            pressed3 = false;
+            shooterWheel.setPower(0);
         }
 
         if(gamepad2.b && doorOpen)
@@ -194,14 +244,20 @@ public class TeleOpMeets extends OpMode
             }
         }
         else if (pressed1 == true && done1 == false) {
-            if (timer.seconds() > 0 && timer.seconds() < 1)
+            if (timer.seconds() > 0 && timer.seconds() < .5)
             {
                 wobblePivotTop.setPosition(0.6);
                 wobblePivotBottom.setPosition(0.4);
                 wobbleThirdPivot.setPosition(0.6);
             }
-            if (timer.seconds() > 1) {
+            if (timer.seconds() > 1 && timer.seconds() < 1.5) {
                 wobbleClaw.setPosition(.75);
+            }
+            if (timer.seconds() > 1.5 && timer.seconds() < 2) {
+                wobbleClaw.setPosition(1);
+                wobblePivotTop.setPosition(0);
+                wobblePivotBottom.setPosition(1);
+                wobbleThirdPivot.setPosition(0);
                 done1 = true;
             }
         }
@@ -221,15 +277,15 @@ public class TeleOpMeets extends OpMode
         }
         else if (pressed2 == true && done2 == false)
         {
-            if (timer.seconds() > 0 && timer.seconds() < .75)
+            if (timer.seconds() > 0 && timer.seconds() < .5)
             {
                 wobbleClaw.setPosition(1);
             }
-            if(timer.seconds() > .75)
+            if(timer.seconds() > .5)
             {
-                wobblePivotTop.setPosition(1);
-                wobblePivotBottom.setPosition(0);
-                wobbleThirdPivot.setPosition(1);
+                wobblePivotTop.setPosition(0);
+                wobblePivotBottom.setPosition(1);
+                wobbleThirdPivot.setPosition(0);
                 done2 = true;
             }
         }
@@ -256,6 +312,7 @@ public class TeleOpMeets extends OpMode
             wobblePivotTop.setPosition(1);
             wobblePivotBottom.setPosition(0);
             wobbleThirdPivot.setPosition(1);
+            wobbleClaw.setPosition(.75);
         }
         else if (gamepad2.right_stick_y<-.1)
         {
@@ -294,34 +351,27 @@ public class TeleOpMeets extends OpMode
             wobbleThirdPivot.setPosition(0);
             inBot=!inBot;
         }*/
-
-        //post spring break adjustments
-        /*
-        //dpad claw (remove other one)
-        if (gamepad2.dpad_left)
+    }
+    public void flicker()
+    {
+        shooterFlicker.setPosition(.8);
+        runtime.reset();
+        while (runtime.seconds()<0.3)
         {
-            wobbleClaw.setPosition(.75);
         }
-        else if(gamepad2.dpad_right)
+        shooterFlicker.setPosition(0);
+    }
+    public void turnTime(double time, double power)
+    {
+        runtime.reset();
+        while(runtime.seconds()<time)
         {
-            wobbleClaw.setPosition(1);
+            driveFrontRight.setPower(power);
+            driveFrontLeft.setPower(-power);
+            driveBackRight.setPower(power);
+            driveBackLeft.setPower(-power);
         }
-
-        //dpad lead screw
-        if(gamepad2.dpad_up)
-        {
-            wobbleLead.setPower(1);
-        }
-        else if(gamepad2.dpad_down)
-        {
-            wobbleLead.setPower(-1);
-        }
-        else
-            wobbleLead.setPower(0);
-
-        //right_stick.y>0 - add wobbleClaw.setPosition(1);
-
-        //2.y - automate power shots
-         */
     }
 }
+
+
