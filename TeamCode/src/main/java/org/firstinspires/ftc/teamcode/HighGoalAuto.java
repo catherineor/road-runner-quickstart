@@ -148,7 +148,7 @@ public class HighGoalAuto extends LinearOpMode {
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
-        shooterFlicker.setPosition(flickerPos);
+        shooterFlicker.setPosition(.35);
 
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -263,13 +263,10 @@ public class HighGoalAuto extends LinearOpMode {
                     break;
                 case TOSHOOT:
                     shooterWheel.setPower(-.45);
-                    shooterFlicker.setPosition(0);
+                    shooterFlicker.setPosition(.3);
                     resetEncoders();
                     useEncoders();
-                    encoderCrab(15, -.5);
-                    resetEncoders();
-                    useEncoders();
-                    encoderForwards(41, .65);
+                    encoderForwards(41, .6);
                     setStateRunning(State.SHOOT1);
                     break;
                 case SHOOT1:
@@ -324,7 +321,7 @@ public class HighGoalAuto extends LinearOpMode {
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderCrab(11, -.5);
+                        encoderCrab(15, -.5);
                         resetEncoders();
                         useEncoders();
                         encoderForwards(35, .65);
@@ -341,7 +338,7 @@ public class HighGoalAuto extends LinearOpMode {
                     if(ringHeight==4){
                         resetEncoders();
                         useEncoders();
-                        encoderCrab(20, .5);
+                        encoderCrab(25, .5);
                         //get intake down
                         resetEncoders();
                         useEncoders();
@@ -395,8 +392,8 @@ public class HighGoalAuto extends LinearOpMode {
                     }
                     telemetry.addData("time", autoTime.seconds());
                     telemetry.update();
-                    setStateRunning(State.PARK);
-                    //setStateRunning(State.SHOOT5);
+                    //setStateRunning(State.PARK);
+                    setStateRunning(State.SHOOT5);
                     break;
                 case SHOOT5:
                     shooterWheel.setPower(-.41);
@@ -433,7 +430,7 @@ public class HighGoalAuto extends LinearOpMode {
                     {
                         resetEncoders();
                         useEncoders();
-                        encoderForwards(13, .65);
+                        encoderForwards(15, .7);
                         turnDegrees(98,.4);
                         resetEncoders();
                         useEncoders();
@@ -674,12 +671,12 @@ public class HighGoalAuto extends LinearOpMode {
     }
     public void flicker()
     {
-        shooterFlicker.setPosition(.75);
+        shooterFlicker.setPosition(.6);
         runtime.reset();
         while (runtime.seconds()<0.6)
         {
         }
-        shooterFlicker.setPosition(0);
+        shooterFlicker.setPosition(.3);
     }
 
     public void shooterOnly(float seconds,ElapsedTime time){
