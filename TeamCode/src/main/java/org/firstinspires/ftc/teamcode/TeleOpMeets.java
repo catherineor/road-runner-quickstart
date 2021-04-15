@@ -77,7 +77,7 @@ public class TeleOpMeets extends OpMode
         //shooter
         shooterWheel = hardwareMap.get(DcMotor.class, "shooterWheel");
         shooterFlicker = hardwareMap.get(Servo.class, "shooterFlicker");
-        shooterFlicker.setPosition(0);
+        shooterFlicker.setPosition(.3);
 
         //intake
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -136,26 +136,26 @@ public class TeleOpMeets extends OpMode
         }
         else if (pressed3 == true && done3 == false) {
             shooterWheel.setPower(-.45);
-            if (timer.seconds() > 0 && timer.seconds() < .4)
+            if (timer.seconds() > 0 && timer.seconds() < .5)
             {
                 flicker();
             }
-            if (timer.seconds() > .4 && timer.seconds() < .75)
+            if (timer.seconds() > .5 && timer.seconds() < .8)
             {
-                turnTime(.35, .35);
+                turn(.5);
             }
-            if (timer.seconds() > .75 && timer.seconds() < 1.25)
+            if (timer.seconds() > .8 && timer.seconds() < 1.3)
             {}
-            if (timer.seconds() > 1.25 && timer.seconds() < 1.65) {
+            if (timer.seconds() > 1.3 && timer.seconds() < 1.8) {
                 flicker();
             }
-            if (timer.seconds() > 1.65 && timer.seconds() < 2.15)
+            if (timer.seconds() > 1.8 && timer.seconds() < 2.2)
             {
-                turnTime(.6, -.35);
+                turn(-.5);
             }
-            if (timer.seconds() > 2.15 && timer.seconds() < 2.65)
+            if (timer.seconds() > 2.3 && timer.seconds() < 2.8)
             {}
-            if (timer.seconds() > 2.65 && timer.seconds() < 3.1) {
+            if (timer.seconds() > 2.8 && timer.seconds() < 3.3) {
                 flicker();
                 done3 = true;
             }
@@ -183,7 +183,7 @@ public class TeleOpMeets extends OpMode
             indexRight.setPosition(.5);
             indexLeft.setPosition(.56);
         }
-        if(gamepad1.dpad_down) //move door to close position
+        else if(gamepad1.dpad_down) //move door to close position
         {
             indexRight.setPosition(.6);
             indexLeft.setPosition(.44);
@@ -192,7 +192,7 @@ public class TeleOpMeets extends OpMode
         //shooter
         if(gamepad2.left_trigger>0)
         {
-            shooterWheel.setPower(-.485);
+            shooterWheel.setPower(-.457);
             telemetry.addData("shooter power: ", shooterWheel.getPower());
             telemetry.update();
         }
@@ -209,11 +209,11 @@ public class TeleOpMeets extends OpMode
 
         if(gamepad2.a)
         {
-            shooterFlicker.setPosition(.75);
+            shooterFlicker.setPosition(.6);
         }
         else
         {
-            shooterFlicker.setPosition(0);
+            shooterFlicker.setPosition(.3);
         }
 
         //Drivetrain
@@ -343,12 +343,12 @@ public class TeleOpMeets extends OpMode
     }
     public void flicker()
     {
-        shooterFlicker.setPosition(.8);
+        shooterFlicker.setPosition(.6);
         runtime.reset();
-        while (runtime.seconds()<0.3)
+        while (runtime.seconds()<0.2)
         {
         }
-        shooterFlicker.setPosition(0);
+        shooterFlicker.setPosition(.35);
     }
     public void turnTime(double time, double power)
     {
@@ -360,6 +360,13 @@ public class TeleOpMeets extends OpMode
             driveBackRight.setPower(power);
             driveBackLeft.setPower(-power);
         }
+    }
+    public void turn(double power)
+    {
+        driveFrontRight.setPower(power);
+        driveFrontLeft.setPower(-power);
+        driveBackRight.setPower(power);
+        driveBackLeft.setPower(-power);
     }
 }
 
