@@ -106,9 +106,24 @@ public class TeleOpMeets extends OpMode
         shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("claw pos:", wobbleClaw.getPosition());
+        telemetry.update();
     }
     @Override
     public void loop() {
+        
+        //just claw
+        // && wobbleClaw.getPosition()>0.5 && wobbleClaw.getPosition()<.8)
+        if (gamepad1.b || gamepad2.dpad_left)
+        {
+            wobbleClaw.setPosition(1);
+        }
+        // && wobbleClaw.getPosition()>0.8 && wobbleClaw.getPosition()<=1)
+        else if(gamepad1.y || gamepad2.dpad_right)
+        {
+            wobbleClaw.setPosition(.75);
+        }
+        
         //intake and indexing
         if(gamepad2.left_bumper){
             intake.setPower(-1);
@@ -135,13 +150,14 @@ public class TeleOpMeets extends OpMode
             }
         }
         else if (pressed3 == true && done3 == false) {
-            shooterWheel.setPower(-.45);
+            //shooterWheel.setPower(-.45);
             if (timer.seconds() > 0 && timer.seconds() < .5)
             {
                 flicker();
             }
             if (timer.seconds() > .5 && timer.seconds() < .8)
             {
+                //shooterWheel.setPower(-.41);
                 turn(.5);
             }
             if (timer.seconds() > .8 && timer.seconds() < 1.3)
@@ -151,6 +167,7 @@ public class TeleOpMeets extends OpMode
             }
             if (timer.seconds() > 1.8 && timer.seconds() < 2.2)
             {
+                //shooterWheel.setPower(-.4);
                 turn(-.5);
             }
             if (timer.seconds() > 2.3 && timer.seconds() < 2.8)
@@ -168,8 +185,8 @@ public class TeleOpMeets extends OpMode
         
         if(gamepad2.b && doorOpen) //move door to close position
         {
-            indexRight.setPosition(.6);
-            indexLeft.setPosition(.44);
+            indexRight.setPosition(.57);
+            indexLeft.setPosition(.47);
             doorOpen=!doorOpen;
         }
         else if(gamepad2.b && !doorOpen)//move door to open position
@@ -185,8 +202,8 @@ public class TeleOpMeets extends OpMode
         }
         else if(gamepad1.dpad_down) //move door to close position
         {
-            indexRight.setPosition(.6);
-            indexLeft.setPosition(.44);
+            indexRight.setPosition(.57);
+            indexLeft.setPosition(.47);
         }
 
         //shooter
@@ -331,16 +348,9 @@ public class TeleOpMeets extends OpMode
             wobblePivotBottom.setPosition(1);
             wobbleThirdPivot.setPosition(0);
         }
-        //just claw
-        if (gamepad2.dpad_right && wobbleClaw.getPosition()>0.5 && wobbleClaw.getPosition()<.8)
-        {
-            wobbleClaw.setPosition(1);
-        }
-        else if(gamepad2.dpad_left && wobbleClaw.getPosition()>0.8 && wobbleClaw.getPosition()<=1)
-        {
-            wobbleClaw.setPosition(.75);
-        }
+        
     }
+    
     public void flicker()
     {
         shooterFlicker.setPosition(.6);
