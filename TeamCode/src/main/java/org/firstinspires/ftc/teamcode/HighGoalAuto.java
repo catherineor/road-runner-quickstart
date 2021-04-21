@@ -91,6 +91,7 @@ public class HighGoalAuto extends LinearOpMode {
     private Servo wobblePivotBottom;
     private Servo wobbleThirdPivot;
     private Servo wobbleClaw;
+    private double clawPos = 1;
 
     private double drive, strafe = 0;
 
@@ -163,7 +164,7 @@ public class HighGoalAuto extends LinearOpMode {
         wobblePivotTop.setPosition(0);
         wobblePivotBottom.setPosition(1);
         wobbleThirdPivot.setPosition(0);
-        wobbleClaw.setPosition(1);
+        wobbleClaw.setPosition(clawPos);
 
         //ring detection
         initVuforia();
@@ -314,7 +315,8 @@ public class HighGoalAuto extends LinearOpMode {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(1, .65);*/
-                        wobbleClaw.setPosition(1);
+                        clawPos=1;
+                        wobbleClaw.setPosition(clawPos);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
                         wobbleThirdPivot.setPosition(1);
@@ -334,7 +336,8 @@ public class HighGoalAuto extends LinearOpMode {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(15, .7);
-                        wobbleClaw.setPosition(1);
+                        clawPos=1;
+                        wobbleClaw.setPosition(clawPos);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
                         wobbleThirdPivot.setPosition(1);
@@ -351,7 +354,8 @@ public class HighGoalAuto extends LinearOpMode {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(35, .7);
-                        wobbleClaw.setPosition(1);
+                        clawPos=1;
+                        wobbleClaw.setPosition(clawPos);
                         wobblePivotTop.setPosition(1);
                         wobblePivotBottom.setPosition(0);
                         wobbleThirdPivot.setPosition(1);
@@ -361,7 +365,8 @@ public class HighGoalAuto extends LinearOpMode {
                     break;
                 case INTAKE:
                     if(ringHeight==4){
-                        wobbleClaw.setPosition(.75);
+                        clawPos=.75;
+                        wobbleClaw.setPosition(clawPos);
                         resetEncoders();
                         useEncoders();
                         encoderCrab(22, .6);
@@ -453,7 +458,8 @@ public class HighGoalAuto extends LinearOpMode {
                         resetEncoders();
                         useEncoders();
                         encoderForwards(5, .4);
-                        wobbleClaw.setPosition(1);
+                        clawPos=1;
+                        wobbleClaw.setPosition(clawPos);
                         sleep(300);
                         runtime.reset();
                         while(runtime.seconds()<1.5){
@@ -465,7 +471,8 @@ public class HighGoalAuto extends LinearOpMode {
                         setStateRunning(State.DELIVER2);
                     }
                     else if (ringHeight == 1){
-                        wobbleClaw.setPosition(.75);
+                        clawPos=.75;
+                        wobbleClaw.setPosition(clawPos);
                         resetEncoders();
                         useEncoders();
                         encoderBackwards(10, .7);
@@ -529,11 +536,13 @@ public class HighGoalAuto extends LinearOpMode {
                         encoderForwards(10, .65);
                         // wobblePivotTop.setPosition(1);
                         // wobblePivotBottom.setPosition(0);
-                        wobbleClaw.setPosition(1);
+                        clawPos=1;
+                        wobbleClaw.setPosition(clawPos);
                     }
                     else if(ringHeight==1)
                     {
-                        wobbleClaw.setPosition(.75);
+                        clawPos=.75;
+                        wobbleClaw.setPosition(clawPos);
                         resetEncoders();
                         useEncoders();
                         encoderBackwards(12, .65);
