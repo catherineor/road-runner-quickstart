@@ -140,7 +140,13 @@ public class TeleOpMeets extends OpMode
             index.setPower(0);
         }
         //automate power shots
-        if (gamepad2.y && pressed3 == false)
+        if(gamepad2.y)
+        {
+            resetEncoders();
+            useEncoders();
+            encoderCrab(10,.6);
+        }
+        /*if (gamepad2.y && pressed3 == false)
         {
             done3 = false;
             if (!pressed3)
@@ -181,7 +187,7 @@ public class TeleOpMeets extends OpMode
         {
             pressed3 = false;
             shooterWheel.setPower(0);
-        }
+        }*/
         
         if(gamepad2.b && doorOpen) //move door to close position
         {
@@ -377,5 +383,44 @@ public class TeleOpMeets extends OpMode
         driveFrontLeft.setPower(-power);
         driveBackRight.setPower(power);
         driveBackLeft.setPower(-power);
+    }
+    public void crab(double power)
+    {
+        driveFrontRight.setPower(power);
+        driveFrontLeft.setPower(-power);
+        driveBackRight.setPower(-power);
+        driveBackLeft.setPower(power);
+    }
+    public void encoderCrab(int inches, double power){
+        final double WHEEL_DIAMETER = 7.5; //in cm
+        final double COUNTS_PER_CM = 560 / (Math.PI * WHEEL_DIAMETER);
+        final int STRAIGHT_COUNTS = (int) (COUNTS_PER_CM*2.54*inches);
+
+        while(Math.abs(driveBackRight.getCurrentPosition()) < Math.abs(STRAIGHT_COUNTS)){
+            crab(power);
+            telemetry.addData("STRAIGHT_COUNTS",STRAIGHT_COUNTS);
+            telemetry.addData("POSITION", driveBackRight.getCurrentPosition());
+            telemetry.update();
+        }
+        stopMotors();
+        return;
+    }
+    public void stopMotors()
+    {
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
+    }
+    public void resetEncoders()
+    {
+        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void useEncoders()
+    {
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }
