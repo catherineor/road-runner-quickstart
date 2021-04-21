@@ -195,12 +195,12 @@ public class TeleOpMeets extends OpMode
             indexLeft.setPosition(0);
             doorOpen=!doorOpen;
         }
-        if(gamepad1.dpad_up)//move door closed more a little
+        if(gamepad1.dpad_up)//move door up more
         {
-            indexRight.setPosition(.44);
-            indexLeft.setPosition(.62);
+            indexRight.setPosition(.38);
+            indexLeft.setPosition(.68);
         }
-        else if(gamepad1.dpad_down) //move door to close position
+        else if(gamepad1.dpad_down) //move door down a little
         {
             indexRight.setPosition(.57);
             indexLeft.setPosition(.47);
