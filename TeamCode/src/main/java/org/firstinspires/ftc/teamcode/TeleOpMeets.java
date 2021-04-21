@@ -185,8 +185,8 @@ public class TeleOpMeets extends OpMode
         
         if(gamepad2.b && doorOpen) //move door to close position
         {
-            indexRight.setPosition(.57);
-            indexLeft.setPosition(.47);
+            indexRight.setPosition(.46);
+            indexLeft.setPosition(.6);
             doorOpen=!doorOpen;
         }
         else if(gamepad2.b && !doorOpen)//move door to open position
@@ -197,8 +197,8 @@ public class TeleOpMeets extends OpMode
         }
         if(gamepad1.dpad_up)//move door closed more a little
         {
-            indexRight.setPosition(.5);
-            indexLeft.setPosition(.56);
+            indexRight.setPosition(.44);
+            indexLeft.setPosition(.62);
         }
         else if(gamepad1.dpad_down) //move door to close position
         {
@@ -379,5 +379,3 @@ public class TeleOpMeets extends OpMode
         driveBackLeft.setPower(-power);
     }
 }
-
-
